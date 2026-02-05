@@ -10,8 +10,9 @@ from arguments import parse_arguments
 from console import console
 from utilities import log_timing
 
-MODEL_DEFAULT_FAST = "meta-llama/Llama-3.2-1B-Instruct:fastest"
-MODEL_DEFAULT = "EssentialAI/rnj-1-instruct:together"
+#MODEL_DEFAULT = "EssentialAI/rnj-1-instruct:together"
+MODEL_DEFAULT = "Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8"
+
 
 _client = None  # Reusable client instance
 
@@ -44,15 +45,22 @@ def get_client():
   return _client
 
 
-def get_default_model(fast=False):
-  if fast:
-    return os.getenv("HF_MODEL_FAST", MODEL_DEFAULT_FAST)
+def list_models():
+  from models import all_models
+  print(all_models)
+
+
+def set_default_model(model):
+  os.environ["HF_MODEL"] = model
+
+
+def get_default_model():
   return os.getenv("HF_MODEL", MODEL_DEFAULT)
 
 
-def prompt(question, model=None, fast=False, stream=True, system_prompt=None):
+def prompt(question, model=None, stream=True, system_prompt=None):
   if not model:
-    model = get_default_model(fast)
+    model = get_default_model()
   if not question:
     raise SystemExit("ERROR: You gotta ask a question")
 
@@ -107,5 +115,5 @@ def stream_answer(question, model, system_prompt=None):
 
 
 if __name__ == "__main__":
-  question, model, fast, system_prompt = parse_arguments()
-  prompt(question, model, fast, system_prompt)
+  question, model, system_prompt = parse_arguments()
+  prompt(question, model, system_prompt)

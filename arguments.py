@@ -23,7 +23,6 @@ Examples:
 %(prog)s --question "why is the sky blue?"
 %(prog)s --model "deepseek-ai/DeepSeek-V3.2" --question "..."
 %(prog)s --question "..." --model "deepseek-ai/DeepSeek-V3.2"
-%(prog)s --question "..." --fast
 %(prog)s "..." --model "deepseek-ai/DeepSeek-V3.2"
     """
   )
@@ -41,13 +40,6 @@ Examples:
     "-m",
     type=str,
     help="Model to use for processing (default: env['HF_MODEL'])"
-  )
-
-  parser.add_argument(
-    "--fast",
-    "-f",
-    action="store_true",
-    help="Model to use for processing (default: env['HF_MODEL_FAST'])"
   )
 
   parser.add_argument(
@@ -96,4 +88,4 @@ Examples:
     console.print(system_prompt, style="yellow")
 
   # Then return it
-  return question, args.model, args.fast, system_prompt
+  return question, args.model, system_prompt
