@@ -1,0 +1,15 @@
+# Enforce LF (Linux/Mac) line endings on checkout for all text files
+* text=auto eol=lf
+
+# Explicitly match your project file types to be safe
+*.py  text eol=lf
+*.md  text eol=lf
+*.txt text eol=lf
+*.csv text eol=lf
+*.ps1 text eol=lf
+.gitignore text eol=lf
+
+# Treat binary files correctly (prevents git from mangling images/data)
+*.png binary
+*.jpg binary
+*.pyc binary
