@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from datetime import timedelta, datetime
 from time import monotonic
 from functools import wraps
