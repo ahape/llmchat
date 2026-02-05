@@ -1,299 +1,331 @@
 #!/usr/bin/env python3
-import os, sys, csv
+import os
+import csv
+import json
+import tempfile
 from pathlib import Path
+from dataclasses import dataclass, asdict
+from typing import List, Optional, Dict, Any, Generator, Tuple
+from datetime import datetime
+
+# Third-party imports
 from rich.markdown import Markdown
 from rich.live import Live
 from rich.table import Table
+from rich.console import Console
 from openai import OpenAI, APIError
-from arguments import parse_arguments
-from console import console
-from utilities import log_timing
+
+# Local imports
+try:
+  from arguments import parse_arguments
+  from utilities import log_timing
+except ImportError:
+  # Fallback for standalone testing
+  import argparse
+  def parse_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--question", "-q", help="The question to ask")
+    parser.add_argument("--model", "-m", help="Model name")
+    parser.add_argument("--list-models", action="store_true")
+    parser.add_argument("--context", "-c", help="Context ID", default=None)
+    return parser.parse_args()
+  def log_timing(func):
+    return func
+
+# Initialize Console globally for UI
+console = Console()
+
+# --- Configuration & Data Structures ---
 
 MODEL_DEFAULT = "Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8"
-_client = None  # Single reusable client instance
 
-def list_models(search=None):
-  """List available models from CSV"""
-  models = _load_models_csv()
+@dataclass
+class ModelInfo:
+  """Represents a row from the models CSV for type safety."""
+  name: str
+  provider: str
+  tags: str
+  input_cost: float
+  output_cost: float
+  context_length: str
+  latency: str
+  throughput: str
+  tools: str
+  structured: str
 
-  if search:
-    models = [m for m in models if search.lower() in m['Model'].lower()]
+  @property
+  def total_cost(self) -> float:
+    return self.input_cost + self.output_cost
 
-  if not models:
-    console.print("[yellow]No models found[/yellow]")
-    return
+  @property
+  def full_id(self) -> str:
+    """Returns the format expected by the API (model:provider)."""
+    if ":" in self.name:
+      return self.name
+    return f"{self.name}:{self.provider}"
 
-  table = Table(title="Available Models")
-  table.add_column("Model", style="cyan", no_wrap=False)
-  table.add_column("Provider", style="green")
-  table.add_column("Tags", style="yellow")
-  table.add_column("Input $/1M", style="blue")
-  table.add_column("Output $/1M", style="blue")
-  table.add_column("Context", style="magenta")
+# --- Managers (Logic Layer) ---
 
-  # Group by model name and show cheapest
-  seen_models = set()
-  for model_info in models:
-    model_name = model_info['Model']
-    if model_name not in seen_models:
-      seen_models.add(model_name)
-      cheapest = _get_cheapest_provider(model_name)
-      if cheapest:
-        table.add_row(
-          cheapest['Model'],
-          cheapest['Provider'],
-          cheapest['Tags'],
-          cheapest['Input $/1M'],
-          cheapest['Output $/1M'],
-          cheapest['Context']
-        )
+class ModelRegistry:
+  """Handles loading and searching for models."""
+  
+  def __init__(self, csv_path: str = "models.csv"):
+    self.csv_path = Path(csv_path)
+    self.models: List[ModelInfo] = self._load_models()
 
-  console.print(table)
-
-def set_default_model(model, provider=None):
-  """Set the default model and optionally provider"""
-  console.print("\n[dim]FYI: You can also change the model via the environment variable HF_MODEL[/dim]")
-
-  os.environ["HF_MODEL"] = model
-  if provider:
-    os.environ["HF_PROVIDER"] = provider
-
-  # Display model info
-  if provider:
-    matches = _find_model_info(model, provider)
-    model_info = matches[0] if matches else None
-  else:
-    model_info = _get_cheapest_provider(model)
-
-  if model_info:
-    console.print(f"\n[green]✓[/green] Model set to: {model}")
-    if provider:
-      console.print(f"[green]✓[/green] Provider set to: {provider}")
-    _display_model_info(model_info)
-  else:
-    console.print(f"\n[yellow]⚠[/yellow] Model set to: {model} (not found in CSV)")
-
-def get_default_model():
-  """Get the current default model"""
-  return os.getenv("HF_MODEL", MODEL_DEFAULT)
-
-def get_default_provider():
-  """Get the current default provider"""
-  return os.getenv("HF_PROVIDER", None)
-
-def prompt(question, model=None, stream=True, system_prompt=None, provider=None):
-  if not model:
-    model = get_default_model()
-  if not provider:
-    provider = get_default_provider()
-
-  if not question:
-    raise SystemExit("ERROR: You gotta ask a question")
-
-  # Find model info and determine provider
-  model_info = None
-  if not provider:
-    model_info = _get_cheapest_provider(model)
-    if model_info:
-      provider = model_info['Provider']
-    else:
-      console.print(f"[yellow]Warning: Model '{model}' not found in CSV, using model as-is[/yellow]")
-  else:
-    # Validate provider is available for this model
-    matches = _find_model_info(model, provider)
-    if matches:
-      model_info = matches[0]
-    else:
-      console.print(f"[yellow]Warning: Provider '{provider}' not found for model '{model}' in CSV[/yellow]")
-
-  # Format model with provider suffix
-  if provider:
-    model_with_provider = _format_model_with_provider(model, provider)
-  else:
-    model_with_provider = model
-
-  console.print("\n[bold]Processing...[/bold]\n", style="yellow")
-  console.print(f"  [cyan]Question:[/cyan] {question}")
-  console.print(f"  [cyan]Model:[/cyan] {model}")
-  if provider:
-    console.print(f"  [cyan]Provider:[/cyan] {provider}")
-  console.print(f"  [cyan]Full Model String:[/cyan] {model_with_provider}\n")
-
-  # Display model details
-  if model_info:
-    console.print("[dim]Model Details:[/dim]")
-    console.print(f"  Cost: ${model_info.get('Input $/1M', 'N/A')}/1M in, ${model_info.get('Output $/1M', 'N/A')}/1M out")
-    console.print(f"  Context: {model_info.get('Context', 'N/A')} | Latency: {model_info.get('Latency(s)', 'N/A')}s | Throughput: {model_info.get('Throughput(t/s)', 'N/A')} t/s\n")
-
-  try:
-    if stream:
-      answer = _stream_answer(question, model_with_provider, system_prompt)
-    else:
-      answer = _get_answer(question, model_with_provider, system_prompt)
-      console.print(Markdown(answer))
-  except APIError as e:
-    console.print(f"[red]API Error: {e.message}[/red]")
-    return
-
-  console.print("\n")
-
-def _load_models_csv(csv_path="models.csv"):
-  """Load models from CSV file"""
-  models = []
-  csv_file = Path(csv_path)
-
-  if not csv_file.exists():
-    console.print(f"[yellow]Warning: {csv_path} not found[/yellow]")
+  def _load_models(self) -> List[ModelInfo]:
+    if not self.csv_path.exists():
+      return []
+    
+    models = []
+    try:
+      with open(self.csv_path, 'r', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+          # Safe conversion of costs
+          i_cost = float(row.get('Input $/1M', 0)) if row.get('Input $/1M') not in ('-', '') else 0.0
+          o_cost = float(row.get('Output $/1M', 0)) if row.get('Output $/1M') not in ('-', '') else 0.0
+          
+          models.append(ModelInfo(
+            name=row['Model'],
+            provider=row['Provider'],
+            tags=row.get('Tags', ''),
+            input_cost=i_cost,
+            output_cost=o_cost,
+            context_length=row.get('Context', '-'),
+            latency=row.get('Latency(s)', '-'),
+            throughput=row.get('Throughput(t/s)', '-'),
+            tools=row.get('Tools', ''),
+            structured=row.get('Structured', '')
+          ))
+    except Exception as e:
+      console.print(f"[yellow]Error parsing CSV: {e}[/yellow]")
     return models
 
-  with open(csv_file, 'r', encoding='utf-8') as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-      models.append(row)
+  def find_best_provider(self, model_name: str, strategy: str = "cheapest") -> Optional[ModelInfo]:
+    """Finds a model, prioritizing specific providers or cost."""
+    matches = [m for m in self.models if model_name.lower() in m.name.lower()]
+    
+    if not matches:
+      return None
 
-  return models
+    # Determine strategy
+    if strategy == "cheapest":
+      # Filter those with valid pricing (non-zero or known)
+      priced = [m for m in matches if m.input_cost > 0 or m.output_cost > 0]
+      if priced:
+        return min(priced, key=lambda m: m.total_cost)
+      return matches[0]
+    
+    # Add 'fastest' logic here if needed
+    return matches[0]
 
-def _find_model_info(model_name, provider=None):
-  """Find model information from CSV, optionally filtered by provider"""
-  models = _load_models_csv()
-
-  # Try exact match first
-  matches = [m for m in models if m['Model'] == model_name]
-
-  # Filter by provider if specified
-  if provider and matches:
-    matches = [m for m in matches if m['Provider'] == provider]
-
-  if not matches:
-    # Try partial match
-    matches = [m for m in models if model_name in m['Model']]
-    if provider and matches:
-      matches = [m for m in matches if m['Provider'] == provider]
-
-  return matches
-
-def _get_cheapest_provider(model_name):
-  """Find the cheapest provider for a given model"""
-  matches = _find_model_info(model_name)
-  if not matches:
+  def get_specific_model(self, model_name: str, provider: str) -> Optional[ModelInfo]:
+    for m in self.models:
+      if m.name == model_name and m.provider == provider:
+        return m
     return None
 
-  # Filter out entries without pricing
-  priced = [m for m in matches if m['Input $/1M'] != '-' and m['Output $/1M'] != '-']
-  if not priced:
-    return matches[0]  # Return first available if no pricing
+class ContextManager:
+  """Handles loading and saving chat history."""
+  
+  def __init__(self, context_id: str = None):
+    self.base_dir = Path(tempfile.gettempdir()) / "huggingchat_contexts"
+    self.base_dir.mkdir(parents=True, exist_ok=True)
+    self.context_id = context_id
+    self.messages: List[Dict[str, str]] = []
+    
+    if self.context_id == "new":
+      self.save()
+      console.print("[dim]Cleared default context history ('--context new' argument specified)[/dim]")
+      self.context_id = "default"
 
-  # Calculate total cost (input + output) and find minimum
-  cheapest = min(priced, key=lambda m: float(m['Input $/1M']) + float(m['Output $/1M']))
-  return cheapest
+    if self.context_id:
+      self._load()
 
-def _get_fastest_provider(model_name):
-  """Find the fastest provider for a given model"""
-  matches = _find_model_info(model_name)
-  if not matches:
-    return None
+  def _load(self):
+    file_path = self.context_path
+    if file_path.exists():
+      try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+          data = json.load(f)
+          self.messages = data.get('messages', [])
+        console.print(f"[dim]Loaded {len(self.messages)} messages from context '{file_path}'[/dim]")
+      except Exception as e:
+        console.print(f"[red]Failed to load context: {e}[/red]")
 
-  # Filter out entries without latency data
-  with_latency = [m for m in matches if m['Latency(s)'] != '-']
-  if not with_latency:
-    return matches[0]  # Return first available if no latency data
+  @property
+  def context_path(self):
+    return self.base_dir / f"{self.context_id}.json"
 
-  # Find minimum latency
-  fastest = min(with_latency, key=lambda m: float(m['Latency(s)']))
-  return fastest
+  def save(self):
+    if not self.context_id:
+      return
 
-def _display_model_info(model_info):
-  """Display model information in a nice table"""
-  table = Table(title=f"Model: {model_info['Model']}")
-  table.add_column("Property", style="cyan")
-  table.add_column("Value", style="green")
+    data = {
+      "id": self.context_id,
+      "timestamp": datetime.now().isoformat(),
+      "messages": self.messages
+    }
+    with open(self.context_path, 'w', encoding='utf-8') as f:
+      json.dump(data, f, indent=2, ensure_ascii=False)
 
-  table.add_row("Provider", model_info['Provider'])
-  if model_info['Tags']:
-    table.add_row("Tags", model_info['Tags'])
-  table.add_row("Input Cost", f"${model_info['Input $/1M']}/1M tokens" if model_info['Input $/1M'] != '-' else 'N/A')
-  table.add_row("Output Cost", f"${model_info['Output $/1M']}/1M tokens" if model_info['Output $/1M'] != '-' else 'N/A')
-  table.add_row("Context Length", model_info['Context'] if model_info['Context'] != '-' else 'N/A')
-  table.add_row("Latency", f"{model_info['Latency(s)']}s" if model_info['Latency(s)'] != '-' else 'N/A')
-  table.add_row("Throughput", f"{model_info['Throughput(t/s)']} t/s" if model_info['Throughput(t/s)'] != '-' else 'N/A')
-  table.add_row("Tools Support", model_info['Tools'])
-  table.add_row("Structured Output", model_info['Structured'])
+  def add_message(self, role: str, content: str):
+    self.messages.append({"role": role, "content": content})
 
-  console.print(table)
+  def get_messages_for_api(self, current_question: str) -> List[Dict[str, str]]:
+    # Return history + current question
+    msgs = list(self.messages)
+    msgs.append({"role": "user", "content": current_question})
+    return msgs
 
-def _build_messages(question, system_prompt=None):
-  messages = []
-  if system_prompt:
-    messages.append({"role": "system", "content": system_prompt})
-  messages.append({"role": "user", "content": question})
-  return messages
-
-def _get_api_key():
-  """Get HuggingFace API key"""
-  token = os.getenv("HF_TOKEN")
-  if token:
-    return token
-
-  token_path = Path(".HF_TOKEN")
-  if token_path.exists():
-    return token_path.read_text().strip()
-
-  raise SystemExit("ERROR: Need to configure your HF_TOKEN")
-
-def _get_client():
-  """Get or create OpenAI client for HuggingFace router"""
-  global _client
-
-  if _client is None:
-    _client = OpenAI(
+class LLMClient:
+  """Wrapper for the API interactions."""
+  
+  def __init__(self):
+    self.api_key = self._get_api_key()
+    self.client = OpenAI(
       base_url="https://router.huggingface.co/v1",
-      api_key=_get_api_key(),
+      api_key=self.api_key,
     )
 
-  return _client
+  @staticmethod
+  def _get_api_key() -> str:
+    token = os.getenv("HF_TOKEN")
+    if token:
+      return token
+    
+    token_path = Path(".HF_TOKEN")
+    if token_path.exists():
+      return token_path.read_text().strip()
+      
+    console.print("[red]ERROR: HF_TOKEN not found in env or .HF_TOKEN file[/red]")
+    sys.exit(1)
 
-@log_timing
-def _get_answer(question, model, system_prompt=None):
-  messages = _build_messages(question, system_prompt)
+  @log_timing
+  def chat(self, model_id: str, messages: List[Dict[str, str]], stream: bool = True) -> Generator[str, None, None] | str:
+    try:
+      response = self.client.chat.completions.create(
+        model=model_id,
+        messages=messages,
+        stream=stream,
+      )
+      
+      if stream:
+        return response
+      else:
+        return response.choices[0].message.content
+    except APIError as e:
+      console.print(f"[red]API Error: {e.message}[/red]")
+      return ""
 
-  completion = _get_client().chat.completions.create(
-    model=model,
-    messages=messages,
-  )
-  return completion.choices[0].message.content
+# --- Presentation Layer (UI) ---
 
-@log_timing
-def _stream_answer(question, model, system_prompt=None):
-  messages = _build_messages(question, system_prompt)
+class App:
+  def __init__(self):
+    self.registry = ModelRegistry()
+    self.llm = LLMClient()
 
-  stream = _get_client().chat.completions.create(
-    model=model,
-    messages=messages,
-    stream=True,
-  )
+  def list_models(self, search: str = None):
+    models = self.registry.models
+    if search:
+      models = [m for m in models if search.lower() in m.name.lower()]
 
-  full_response = ""
-  with Live(console=console, refresh_per_second=10) as live:
-    for chunk in stream:
-      if chunk.choices and chunk.choices[0].delta.content:
-        full_response += chunk.choices[0].delta.content
-        live.update(Markdown(full_response))
+    if not models:
+      console.print("[yellow]No models found[/yellow]")
+      return
 
-  return full_response
+    table = Table(title="Available Models")
+    table.add_column("Model", style="cyan", no_wrap=False)
+    table.add_column("Provider", style="green")
+    table.add_column("Input $/1M", style="blue")
+    table.add_column("Output $/1M", style="blue")
+    table.add_column("Context", style="magenta")
 
-def _format_model_with_provider(model, provider):
-  """Format model string with provider suffix for HuggingFace router"""
-  if ':' in model:
-    # Already has provider suffix
-    return model
-  return f"{model}:{provider}"
+    # Deduplicate by showing the cheapest provider for each unique model name
+    seen = set()
+    for m in models:
+      if m.name not in seen:
+        seen.add(m.name)
+        best = self.registry.find_best_provider(m.name)
+        if best:
+          table.add_row(
+            best.name, best.provider, 
+            f"{best.input_cost}", f"{best.output_cost}", 
+            best.context_length
+          )
+    console.print(table)
+
+  def _display_model_details(self, model: ModelInfo):
+    """Displays technical details about the selected model."""
+    console.print(f"  [cyan]Cost:[/cyan]     [magenta]${model.input_cost}/1M in, ${model.output_cost}/1M out[/magenta]")
+    console.print(f"  [cyan]Details:[/cyan]  [magenta]{model.context_length} | Latency: {model.latency}s | Throughput: {model.throughput} t/s[/magenta]\n")
+
+  def run_prompt(self, question: str, model_name: str = None, provider: str = None, context_id: str = None):
+    if not question:
+      console.print("[red]Error: Question is required.[/red]")
+      return
+
+    # 1. Resolve Configuration
+    model_name = model_name or os.getenv("HF_MODEL", MODEL_DEFAULT)
+    provider = provider or os.getenv("HF_PROVIDER")
+
+    # 2. Resolve Model Info
+    selected_model: Optional[ModelInfo] = None
+    if provider:
+      selected_model = self.registry.get_specific_model(model_name, provider)
+    else:
+      selected_model = self.registry.find_best_provider(model_name)
+
+    # Fallback if model not in CSV but passed as arg
+    full_model_id = selected_model.full_id if selected_model else (f"{model_name}:{provider}" if provider else model_name)
+
+    # 3. Setup Context
+    ctx_mgr = ContextManager(context_id)
+    
+    # 4. Display UI Status
+    console.print("\n[bold]Processing...[/bold]\n", style="yellow")
+    console.print(f"  [cyan]Question:[/cyan] {question}")
+    console.print(f"  [cyan]Target:[/cyan]   {full_model_id}")
+    if context_id:
+      console.print(f"  [cyan]Context:[/cyan]  {context_id}")
+    
+    if selected_model:
+      self._display_model_details(selected_model)
+    else:
+      console.print(f"[yellow]Warning: Model '{model_name}' not found in CSV. Using raw string.[/yellow]\n")
+
+    # 5. Execute API Call
+    messages = ctx_mgr.get_messages_for_api(question)
+    response_stream = self.llm.chat(full_model_id, messages, stream=True)
+
+    full_response = ""
+    
+    # 6. Render Response
+    with Live(console=console, refresh_per_second=10) as live:
+      for chunk in response_stream:
+        if chunk.choices and chunk.choices[0].delta.content:
+          content = chunk.choices[0].delta.content
+          full_response += content
+          live.update(Markdown(full_response))
+    
+    console.print("\n")
+
+    # 7. Save Context (Crucial Logic Fix)
+    if context_id and full_response:
+      ctx_mgr.add_message("user", question)
+      ctx_mgr.add_message("assistant", full_response)
+      ctx_mgr.save()
+      console.print(f"[dim]Context saved to '{ctx_mgr.context_path}'[/dim]")
 
 if __name__ == "__main__":
-  result = parse_arguments()
+  import sys
+  
+  # Simple argument parsing wrapper if not imported
+  args = parse_arguments()
+  app = App()
 
-  # Check if we're in list-models mode
-  if len(result) == 4 and result[3] is True:  # list-models mode
-    list_models()
+  if args.list_models:
+    app.list_models()
   else:
-    question, model, system_prompt = result[0], result[1], result[2]
-    prompt(question, model, system_prompt)
+    app.run_prompt(args.question, args.model, context_id=args.context)
