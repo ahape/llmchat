@@ -3,7 +3,7 @@ import argparse, sys, os
 from console import console
 
 SYSTEM_PROMPTS = {}
-SYSTEM_PROMPTS.setdefault("cli", 
+SYSTEM_PROMPTS.setdefault("cli",
 """
 
   You are a command line expert (zsh, macOS, tmux, vim). Reply ONLY with the
@@ -18,17 +18,26 @@ def parse_arguments():
     description="Process a question with an optional model parameter",
     formatter_class=argparse.RawDescriptionHelpFormatter,
     epilog="""
-Examples:
-%(prog)s "why is the sky blue?"
-%(prog)s --question "why is the sky blue?"
-%(prog)s --model "deepseek-ai/DeepSeek-V3.2" --question "..."
-%(prog)s --question "..." --model "deepseek-ai/DeepSeek-V3.2"
-%(prog)s "..." --model "deepseek-ai/DeepSeek-V3.2"
+ Examples:
+ %(prog)s "why is the sky blue?"
+ %(prog)s --question "why is the sky blue?"
+ %(prog)s --model "deepseek-ai/DeepSeek-V3.2" --question "..."
+ %(prog)s --question "..." --model "deepseek-ai/DeepSeek-V3.2"
+ %(prog)s "..." --model "deepseek-ai/DeepSeek-V3.2"
     """
   )
 
-  # Optional arguments
-  parser.add_argument(
+  # Mutually exclusive group for list-models
+  group = parser.add_mutually_exclusive_group()
+
+  group.add_argument(
+    "--list-models",
+    action="store_true",
+    help="List available models and exit"
+  )
+
+  # Optional arguments (only valid when not using --list-models)
+  group.add_argument(
     "--question",
     "-q",
     type=str,
@@ -56,7 +65,7 @@ Examples:
   )
 
   # Positional argument (will be used if --question is not provided)
-  parser.add_argument(
+  group.add_argument(
     "positional_question",
     nargs="?",
     type=str,
@@ -64,6 +73,10 @@ Examples:
   )
 
   args = parser.parse_args()
+
+  # Handle list-models argument
+  if args.list_models:
+    return None, None, None, True  # Special return for list-models
 
   # Determine which question to use
   if args.question:
@@ -87,5 +100,5 @@ Examples:
     console.print("using the following system_prompt", style="yellow")
     console.print(system_prompt, style="yellow")
 
-  # Then return it
-  return question, args.model, system_prompt
+  # Then return it with False to indicate not list-models mode
+  return question, args.model, system_prompt, False

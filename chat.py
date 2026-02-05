@@ -289,5 +289,11 @@ def _format_model_with_provider(model, provider):
   return f"{model}:{provider}"
 
 if __name__ == "__main__":
-  question, model, system_prompt = parse_arguments()
-  prompt(question, model, system_prompt)
+  result = parse_arguments()
+
+  # Check if we're in list-models mode
+  if len(result) == 4 and result[3] is True:  # list-models mode
+    list_models()
+  else:
+    question, model, system_prompt = result[0], result[1], result[2]
+    prompt(question, model, system_prompt)
