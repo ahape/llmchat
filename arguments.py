@@ -33,8 +33,10 @@ def parse_arguments():
 
   group.add_argument(
     "--list-models",
+    "-l",
+    "-lm",
     action="store_true",
-    help="List available models and exit"
+    help="List available models that are compatible with Huggle Face router/providers, then exit"
   )
 
   # Optional arguments (only valid when not using --list-models)
