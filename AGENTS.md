@@ -43,42 +43,6 @@ python chat.py --question "What is Python?" --no-stream
 python chat.py "How do I configure zsh?" --cli
 ```
 
-### Testing
-```bash
-# Run all tests (if test suite exists)
-pytest
-
-# Run specific test file
-pytest tests/test_chat.py
-
-# Run with coverage
-pytest --cov=. --cov-report=html
-
-# Run specific test
-pytest -k test_function_name
-
-# Display verbose output
-pytest -v
-```
-
-### Code Quality
-```bash
-# Lint with flake8
-flake8 chat.py arguments.py utilities.py console.py
-
-# Type checking with mypy
-mypy chat.py arguments.py utilities.py console.py
-
-# Formatting with black
-black chat.py arguments.py utilities.py console.py
-
-# Check import sorting with isort
-isort chat.py arguments.py utilities.py console.py
-
-# Run all quality checks
-flake8 && mypy && black --check && isort --check
-```
-
 ## Code Style Guidelines
 
 ### Python Version
@@ -113,8 +77,8 @@ from utilities import log_timing
 
 ```python
 def get_default_model():
-    """Get the current default model"""
-    return os.getenv("HF_MODEL", MODEL_DEFAULT)
+  """Get the current default model"""
+  return os.getenv("HF_MODEL", MODEL_DEFAULT)
 
 MODEL_DEFAULT = "Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8"
 ```
@@ -124,8 +88,8 @@ Always include type hints for function parameters and return values
 
 ```python
 def prompt(question: str, model: str = None, stream: bool = True, 
-          system_prompt: str = None, provider: str = None) -> None:
-    """Process a question through the specified model"""
+           system_prompt: str = None, provider: str = None) -> None:
+  """Process a question through the specified model"""
 ```
 
 ### Docstrings
@@ -133,7 +97,7 @@ Use triple-quoted docstrings with descriptive text
 
 ```python
 def _load_models_csv(csv_path: str = "models.csv") -> List[Dict]:
-    """Load models from CSV file and return as list of dictionaries"""
+  """Load models from CSV file and return as list of dictionaries"""
 ```
 
 ### Error Handling
@@ -141,13 +105,13 @@ Use `try/except` blocks with specific exception types
 
 ```python
 try:
-    # Code that might raise an exception
-    answer = _get_answer(question, model, system_prompt)
+  # Code that might raise an exception
+  answer = _get_answer(question, model, system_prompt)
 except APIError as e:
-    console.print(f"[red]API Error: {e.message}[/red]")
-    return
+  console.print(f"[red]API Error: {e.message}[/red]")
+  return
 except SystemExit as e:
-    raise
+  raise
 ```
 
 ### Console Output
@@ -170,19 +134,20 @@ table.add_column("Model", style="cyan", no_wrap=False)
 - Use decorators for cross-cutting concerns (e.g., `@log_timing`)
 - Place imports at the top of files
 - Keep related functionality together
+- Use two spaces for tabs
 
 ```python
 def prompt(...):
-    # Public API
-    pass
+  # Public API
+  pass
 
 def _load_models_csv(...):
-    # Internal helper
-    pass
+  # Internal helper
+  pass
 
 def _get_cheapest_provider(...):
-    # Internal helper
-    pass
+  # Internal helper
+  pass
 ```
 
 ### Command-Line Interface
@@ -193,12 +158,12 @@ def _get_cheapest_provider(...):
 
 ```python
 parser = argparse.ArgumentParser(
-    description="Process a question with an optional model parameter",
-    formatter_class=argparse.RawDescriptionHelpFormatter,
-    epilog="""Examples:
+  description="Process a question with an optional model parameter",
+  formatter_class=argparse.RawDescriptionHelpFormatter,
+  epilog="""Examples:
 %(prog)s "why is the sky blue?"
 %(prog)s --question "why is the sky blue?"
-    """
+  """
 )
 ```
 
@@ -219,9 +184,9 @@ console.print(f"Question: {question}")
 
 ```python
 if provider:
-    model_with_provider = _format_model_with_provider(model, provider)
+  model_with_provider = _format_model_with_provider(model, provider)
 else:
-    model_with_provider = model
+  model_with_provider = model
 ```
 
 ### Logging and Timing
@@ -231,16 +196,8 @@ else:
 ```python
 @log_timing
 def _get_answer(question, model, system_prompt=None):
-    # Implementation
+  # Implementation
 ```
-
-### Testing Considerations
-- No existing test framework (pytest recommended)
-- Test functions individually
-- Mock API calls when testing
-- Test both streaming and non-streaming modes
-- Test error handling paths
-- Test command-line argument parsing
 
 ## Environment Configuration
 
@@ -255,6 +212,5 @@ def _get_answer(question, model, system_prompt=None):
 ## Additional Notes
 
 - The `models.csv` file contains model information including pricing, context length, and provider details
-- The application supports streaming output for better user experience
 - Uses OpenAI-compatible API format through HuggingFace router
 - Models can be filtered by provider for cost optimization
