@@ -72,5 +72,6 @@ def parse_arguments():
   return Args(
     list_models=bool(args.list_models),
     question=args.question or args.positional_question,
+    model=args.model,
     context=args.context
   )
