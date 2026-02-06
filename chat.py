@@ -205,10 +205,12 @@ class LLMClient:
   @log_timing
   def chat(self, model_id: str, messages: List[Dict[str, str]], stream: bool = True) -> Generator[str, None, None] | str:
     try:
+      stream_options = {"include_usage": True} if stream else None
       response = self.client.chat.completions.create(
         model=model_id,
         messages=messages,
         stream=stream,
+        stream_options=stream_options,
       )
       
       if stream:
@@ -300,7 +302,8 @@ class App:
     response_stream = self.llm.chat(full_model_id, messages, stream=True)
 
     full_response = ""
-    
+    usage = None
+
     # 6. Render Response
     with Live(console=console, refresh_per_second=10) as live:
       for chunk in response_stream:
@@ -308,10 +311,25 @@ class App:
           content = chunk.choices[0].delta.content
           full_response += content
           live.update(Markdown(full_response))
-    
+        if chunk.usage:
+          usage = chunk.usage
+
     console.print("\n")
 
-    # 7. Save Context (Crucial Logic Fix)
+    # 6b. Display Cost
+    if usage:
+      prompt_tokens = usage.prompt_tokens or 0
+      completion_tokens = usage.completion_tokens or 0
+      total_tokens = prompt_tokens + completion_tokens
+      cost_line = f"[dim]Tokens: {prompt_tokens} in + {completion_tokens} out = {total_tokens} total[/dim]"
+      if selected_model and (selected_model.input_cost > 0 or selected_model.output_cost > 0):
+        input_cost = (prompt_tokens / 1_000_000) * selected_model.input_cost
+        output_cost = (completion_tokens / 1_000_000) * selected_model.output_cost
+        total_cost = input_cost + output_cost
+        cost_line += f"[dim] | Cost: ${total_cost:.6f}[/dim]"
+      console.print(cost_line)
+
+    # 7. Save Context
     if context_id and full_response:
       ctx_mgr.add_message("user", question)
       ctx_mgr.add_message("assistant", full_response)
