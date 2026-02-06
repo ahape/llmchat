@@ -2,6 +2,7 @@
 import os
 import csv
 import json
+import time
 import tempfile
 from pathlib import Path
 from dataclasses import dataclass, asdict
@@ -468,49 +469,80 @@ class App:
 
     # 3. Setup Context
     ctx_mgr = ContextManager(context_id)
-    
+
     # 4. Display UI Status
     console.print("\n[bold]Processing...[/bold]\n", style="yellow")
     console.print(f"  [cyan]Question:[/cyan] {question}")
     console.print(f"  [cyan]Target:[/cyan]   {full_model_id}")
     if context_id:
       console.print(f"  [cyan]Context:[/cyan]  {context_id}")
-    
+
     if selected_model:
       self._display_model_details(selected_model)
     else:
       console.print(f"[yellow]Warning: Model '{model_name}' not found in CSV. Using raw string.[/yellow]\n")
 
     # 5. Execute API Call
+    console.print("[dim]Connecting to API...[/dim]")
     messages = ctx_mgr.get_messages_for_api(question)
     response_stream = self.llm.chat(full_model_id, messages, stream=True)
 
     full_response = ""
     usage = None
+    token_count = 0
+    first_token_received = False
+    start_time = time.time()
+    last_token_time = start_time
 
     # 6. Render Response
     with Live(console=console, refresh_per_second=10) as live:
+      # Show waiting status until first token
+      live.update("[dim italic]Waiting for response...[/dim italic]")
+
       for chunk in response_stream:
+        current_time = time.time()
+
         if chunk.choices and chunk.choices[0].delta.content:
           content = chunk.choices[0].delta.content
           full_response += content
+          token_count += 1
+          last_token_time = current_time
+
+          # Mark first token received
+          if not first_token_received:
+            first_token_received = True
+            time_to_first_token = current_time - start_time
+            console.print(f"[dim]First token received in {time_to_first_token:.2f}s[/dim]\n")
+
+          # Update with response content
           live.update(Markdown(full_response))
+
+        # Detect potential hang (no tokens for 30+ seconds after first token)
+        if first_token_received and (current_time - last_token_time) > 30:
+          live.update(Markdown(full_response + "\n\n[yellow italic]⚠ No tokens received for 30s, stream may be stalled...[/yellow italic]"))
+
         if chunk.usage:
           usage = chunk.usage
 
+    # Calculate final timing stats
+    end_time = time.time()
+    total_time = end_time - start_time
+
     console.print("\n")
 
-    # 6b. Display Cost
+    # 6b. Display Cost and Performance
     if usage:
       prompt_tokens = usage.prompt_tokens or 0
       completion_tokens = usage.completion_tokens or 0
       total_tokens = prompt_tokens + completion_tokens
+      tokens_per_sec = completion_tokens / total_time if total_time > 0 else 0
       cost_line = f"[dim]Tokens: {prompt_tokens} in + {completion_tokens} out = {total_tokens} total[/dim]"
       if selected_model and (selected_model.input_cost > 0 or selected_model.output_cost > 0):
         input_cost = (prompt_tokens / 1_000_000) * selected_model.input_cost
         output_cost = (completion_tokens / 1_000_000) * selected_model.output_cost
         total_cost = input_cost + output_cost
         cost_line += f"[dim] | Cost: ${total_cost:.6f}[/dim]"
+      cost_line += f"[dim] | Time: {total_time:.2f}s ({tokens_per_sec:.1f} tokens/s)[/dim]"
       console.print(cost_line)
 
     # 7. Save Context

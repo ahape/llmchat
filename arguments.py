@@ -73,6 +73,7 @@ def parse_arguments():
   group.add_argument(
     "--switch-model",
     "-s",
+    "-sm",
     action="store_true",
     help="Interactively switch the default model, then exit"
   )
