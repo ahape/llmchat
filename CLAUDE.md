@@ -34,7 +34,7 @@ There are no tests, linter, or build system.
 Four source files, no package structure:
 
 - **`chat.py`** — Entry point and all core logic. Contains four classes:
-  - `ModelRegistry` — Loads `models.csv`, finds cheapest provider for a given model name
+  - `ModelRegistry` — Loads `routers/hf/models.csv`, finds cheapest provider for a given model name
   - `ContextManager` — Persists multi-turn chat history as JSON files in system temp dir
   - `LLMClient` — OpenAI SDK wrapper pointing at `router.huggingface.co/v1`
   - `App` — Orchestrates everything: resolves model, calls API, streams/renders response with `rich.Live`, displays token cost
@@ -46,7 +46,7 @@ Four source files, no package structure:
 
 - Default model is stored in `.hf_config.json` (persisted via `--switch-model`), falling back to `HF_MODEL` env var, then `MODEL_DEFAULT` constant
 - Model resolution priority: `--model` arg > `HF_MODEL` env > `.hf_config.json` > hardcoded default (`Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8`)
-- `models.csv` contains provider/pricing/context metadata; `ModelRegistry.find_best_provider()` picks cheapest by default
+- `routers/hf/models.csv` contains provider/pricing/context metadata; `ModelRegistry.find_best_provider()` picks cheapest by default
 - API model IDs use `model_name:provider` format (e.g., `deepseek-ai/DeepSeek-V3.2:novita`)
 - All console output uses `rich` library with color markup (`[cyan]`, `[red]`, etc.)
 

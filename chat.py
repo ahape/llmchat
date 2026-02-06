@@ -81,7 +81,7 @@ class ModelInfo:
 class ModelRegistry:
   """Handles loading and searching for models."""
   
-  def __init__(self, csv_path: str = "models.csv"):
+  def __init__(self, csv_path: str = "./routers/hf/models.csv"):
     self.csv_path = Path(csv_path)
     self.models: List[ModelInfo] = self._load_models()
 
