@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-A CLI tool for querying LLMs via the HuggingFace Router API (OpenAI-compatible). It sends questions to models listed on HuggingFace's inference providers, streams responses with rich markdown rendering, and tracks token usage/cost.
+A CLI tool for querying LLMs via multiple OpenAI-compatible API routers (HuggingFace, Google AI, and easily extensible). It sends questions to models listed in per-router CSV catalogs, streams responses with rich markdown rendering, and tracks token usage/cost.
 
 ## Setup
 
@@ -14,7 +14,9 @@ source .venv/bin/activate   # Unix/macOS
 pip install -r requirements.txt
 ```
 
-Requires `HF_TOKEN` environment variable (HuggingFace API token). Alternatively, place token in a `.HF_TOKEN` file in the project root.
+Requires an API key for the active router:
+- **HuggingFace**: `HF_TOKEN` env var or `.HF_TOKEN` file
+- **Google AI**: `GOOGLE_API_KEY` env var or `.GOOGLE_API_KEY` file
 
 ## Running
 
@@ -23,6 +25,7 @@ python3 chat.py "your question here"
 python3 chat.py --question "your question" --model "deepseek-ai/DeepSeek-V3.2"
 python3 chat.py --list-models          # show available models
 python3 chat.py --switch-model         # interactively change default model
+python3 chat.py --switch-router        # interactively change API router
 python3 chat.py "question" --context   # maintain chat history across calls
 python3 chat.py "question" -c new      # start fresh context
 ```
@@ -33,22 +36,26 @@ There are no tests, linter, or build system.
 
 Four source files, no package structure:
 
-- **`chat.py`** — Entry point and all core logic. Contains four classes:
-  - `ModelRegistry` — Loads `routers/hf/models.csv`, finds cheapest provider for a given model name
+- **`chat.py`** — Entry point and all core logic. Contains key structures:
+  - `RouterConfig` — Dataclass defining a router (base URL, API key env/file, CSV path, defaults)
+  - `ROUTERS` — Registry dict mapping keys ("hf", "google") to `RouterConfig` instances
+  - `ModelRegistry` — Loads the active router's `models.csv`, finds cheapest provider for a given model name
   - `ContextManager` — Persists multi-turn chat history as JSON files in system temp dir
-  - `LLMClient` — OpenAI SDK wrapper pointing at `router.huggingface.co/v1`
-  - `App` — Orchestrates everything: resolves model, calls API, streams/renders response with `rich.Live`, displays token cost
+  - `LLMClient` — OpenAI SDK wrapper parameterized with base URL and API key
+  - `App` — Orchestrates everything: resolves router/model, calls API, streams/renders response with `rich.Live`, displays token cost
 - **`arguments.py`** — argparse setup, returns an `Args` dataclass. Question can be positional or `--question`/`-q`
 - **`console.py`** — Single shared `rich.Console` instance
 - **`utilities.py`** — `@log_timing` decorator for measuring function execution time
 
 ## Key Details
 
-- Default model is stored in `.hf_config.json` (persisted via `--switch-model`), falling back to `HF_MODEL` env var, then `MODEL_DEFAULT` constant
-- Model resolution priority: `--model` arg > `HF_MODEL` env > `.hf_config.json` > hardcoded default (`Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8`)
-- `routers/hf/models.csv` contains provider/pricing/context metadata; `ModelRegistry.find_best_provider()` picks cheapest by default
-- API model IDs use `model_name:provider` format (e.g., `deepseek-ai/DeepSeek-V3.2:novita`)
+- Active router and per-router default models stored in `.llm_config.json` (auto-migrated from `.hf_config.json`)
+- Router selection: `--switch-router` interactive command, persisted in config
+- Model resolution priority: `--model` arg > `HF_MODEL` env > `.llm_config.json[router].default_model` > `RouterConfig.default_model`
+- Each router has its own `routers/<key>/models.csv` with provider/pricing/context metadata
+- API model IDs: HF uses `model_name:provider` format, Google uses just `model_name` (controlled by `RouterConfig.model_id_format`)
 - All console output uses `rich` library with color markup (`[cyan]`, `[red]`, etc.)
+- To add a new router: add entry to `ROUTERS` dict, create `routers/<key>/models.csv`, add API key file to `.gitignore`
 
 ## Code Style
 

@@ -37,8 +37,53 @@ console = Console()
 
 # --- Configuration & Data Structures ---
 
-MODEL_DEFAULT = "Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8"
-CONFIG_PATH = Path(__file__).parent / ".hf_config.json"
+@dataclass
+class RouterConfig:
+  key: str              # "hf", "google"
+  name: str             # "HuggingFace", "Google AI"
+  base_url: str
+  api_key_env: str      # env var name for API key
+  api_key_file: str     # fallback file for API key
+  csv_path: str         # relative path to models CSV
+  default_model: str    # fallback default model
+  model_id_format: str  # "name:provider" (HF) or "name" (Google)
+
+ROUTERS: Dict[str, RouterConfig] = {
+  "hf": RouterConfig(
+    key="hf", name="HuggingFace",
+    base_url="https://router.huggingface.co/v1",
+    api_key_env="HF_TOKEN", api_key_file=".HF_TOKEN",
+    csv_path="routers/hf/models.csv",
+    default_model="Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8",
+    model_id_format="name:provider",
+  ),
+  "google": RouterConfig(
+    key="google", name="Google AI",
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+    api_key_env="GOOGLE_API_KEY", api_key_file=".GOOGLE_API_KEY",
+    csv_path="routers/google/models.csv",
+    default_model="gemini-2.0-flash",
+    model_id_format="name",
+  ),
+}
+ROUTER_DEFAULT = "hf"
+
+CONFIG_PATH = Path(__file__).parent / ".llm_config.json"
+OLD_CONFIG_PATH = Path(__file__).parent / ".hf_config.json"
+
+def _migrate_config():
+  """Migrate .hf_config.json to .llm_config.json if needed."""
+  if OLD_CONFIG_PATH.exists() and not CONFIG_PATH.exists():
+    try:
+      old = json.loads(OLD_CONFIG_PATH.read_text(encoding="utf-8"))
+      new = {
+        "router": "hf",
+        "hf": {"default_model": old.get("default_model", ROUTERS["hf"].default_model)},
+      }
+      CONFIG_PATH.write_text(json.dumps(new, indent=2), encoding="utf-8")
+      console.print("[dim]Migrated .hf_config.json → .llm_config.json[/dim]")
+    except Exception as e:
+      console.print(f"[yellow]Config migration failed: {e}[/yellow]")
 
 def load_config() -> dict:
   if CONFIG_PATH.exists():
@@ -50,6 +95,20 @@ def load_config() -> dict:
 
 def save_config(config: dict):
   CONFIG_PATH.write_text(json.dumps(config, indent=2), encoding="utf-8")
+
+def _get_api_key(router: RouterConfig) -> str:
+  """Read API key from env var or file for the given router."""
+  token = os.getenv(router.api_key_env)
+  if token:
+    return token
+
+  token_path = Path(router.api_key_file)
+  if token_path.exists():
+    return token_path.read_text().strip()
+
+  console.print(f"[red]ERROR: {router.api_key_env} not found in env or {router.api_key_file} file[/red]")
+  import sys
+  sys.exit(1)
 
 @dataclass
 class ModelInfo:
@@ -64,6 +123,7 @@ class ModelInfo:
   throughput: str
   tools: str
   structured: str
+  id_format: str = "name:provider"
 
   @property
   def total_cost(self) -> float:
@@ -71,24 +131,27 @@ class ModelInfo:
 
   @property
   def full_id(self) -> str:
-    """Returns the format expected by the API (model:provider)."""
+    """Returns the format expected by the API."""
     if ":" in self.name:
       return self.name
-    return f"{self.name}:{self.provider}"
+    if self.id_format == "name:provider":
+      return f"{self.name}:{self.provider}"
+    return self.name
 
 # --- Managers (Logic Layer) ---
 
 class ModelRegistry:
   """Handles loading and searching for models."""
-  
-  def __init__(self, csv_path: str = "./routers/hf/models.csv"):
+
+  def __init__(self, csv_path: str = "./routers/hf/models.csv", model_id_format: str = "name:provider"):
     self.csv_path = Path(csv_path)
+    self.model_id_format = model_id_format
     self.models: List[ModelInfo] = self._load_models()
 
   def _load_models(self) -> List[ModelInfo]:
     if not self.csv_path.exists():
       return []
-    
+
     models = []
     try:
       with open(self.csv_path, 'r', encoding='utf-8') as f:
@@ -97,7 +160,7 @@ class ModelRegistry:
           # Safe conversion of costs
           i_cost = float(row.get('Input $/1M', 0)) if row.get('Input $/1M') not in ('-', '') else 0.0
           o_cost = float(row.get('Output $/1M', 0)) if row.get('Output $/1M') not in ('-', '') else 0.0
-          
+
           models.append(ModelInfo(
             name=row['Model'],
             provider=row['Provider'],
@@ -108,7 +171,8 @@ class ModelRegistry:
             latency=row.get('Latency(s)', '-'),
             throughput=row.get('Throughput(t/s)', '-'),
             tools=row.get('Tools', ''),
-            structured=row.get('Structured', '')
+            structured=row.get('Structured', ''),
+            id_format=self.model_id_format,
           ))
     except Exception as e:
       console.print(f"[yellow]Error parsing CSV: {e}[/yellow]")
@@ -193,26 +257,13 @@ class ContextManager:
 
 class LLMClient:
   """Wrapper for the API interactions."""
-  
-  def __init__(self):
-    self.api_key = self._get_api_key()
-    self.client = OpenAI(
-      base_url="https://router.huggingface.co/v1",
-      api_key=self.api_key,
-    )
 
-  @staticmethod
-  def _get_api_key() -> str:
-    token = os.getenv("HF_TOKEN")
-    if token:
-      return token
-    
-    token_path = Path(".HF_TOKEN")
-    if token_path.exists():
-      return token_path.read_text().strip()
-      
-    console.print("[red]ERROR: HF_TOKEN not found in env or .HF_TOKEN file[/red]")
-    sys.exit(1)
+  def __init__(self, base_url: str, api_key: str):
+    self.api_key = api_key
+    self.client = OpenAI(
+      base_url=base_url,
+      api_key=api_key,
+    )
 
   @log_timing
   def chat(self, model_id: str, messages: List[Dict[str, str]], stream: bool = True) -> Generator[str, None, None] | str:
@@ -237,8 +288,22 @@ class LLMClient:
 
 class App:
   def __init__(self):
-    self.registry = ModelRegistry()
-    self.llm = LLMClient()
+    _migrate_config()
+    config = load_config()
+    router_key = config.get("router", ROUTER_DEFAULT)
+    self.router = ROUTERS.get(router_key, ROUTERS[ROUTER_DEFAULT])
+    self.registry = ModelRegistry(
+      csv_path=self.router.csv_path,
+      model_id_format=self.router.model_id_format,
+    )
+    self._llm: Optional[LLMClient] = None
+
+  @property
+  def llm(self) -> LLMClient:
+    if self._llm is None:
+      api_key = _get_api_key(self.router)
+      self._llm = LLMClient(base_url=self.router.base_url, api_key=api_key)
+    return self._llm
 
   def list_models(self, search: str = None):
     models = self.registry.models
@@ -287,8 +352,10 @@ class App:
 
     # Show current default
     config = load_config()
-    current = config.get("default_model", MODEL_DEFAULT)
-    console.print(f"\n[bold]Current default model:[/bold] [cyan]{current}[/cyan]\n")
+    router_config = config.get(self.router.key, {})
+    current = router_config.get("default_model", self.router.default_model)
+    console.print(f"\n[bold]Router:[/bold] [green]{self.router.name}[/green]")
+    console.print(f"[bold]Current default model:[/bold] [cyan]{current}[/cyan]\n")
 
     # Display numbered list
     table = Table(title="Available Models")
@@ -325,9 +392,52 @@ class App:
       return
 
     selected = models[idx]
-    config["default_model"] = selected.name
+    if self.router.key not in config:
+      config[self.router.key] = {}
+    config[self.router.key]["default_model"] = selected.name
     save_config(config)
     console.print(f"\n[bold green]Default model switched to:[/bold green] [cyan]{selected.name}[/cyan] ({selected.provider})")
+
+  def switch_router(self):
+    """Interactively switch the active router."""
+    routers = list(ROUTERS.values())
+    config = load_config()
+    current_key = config.get("router", ROUTER_DEFAULT)
+
+    table = Table(title="Available Routers")
+    table.add_column("#", style="bold", justify="right")
+    table.add_column("Key", style="cyan")
+    table.add_column("Name", style="green")
+    table.add_column("Active", style="yellow", justify="center")
+
+    for i, r in enumerate(routers, 1):
+      active = "*" if r.key == current_key else ""
+      table.add_row(str(i), r.key, r.name, active)
+
+    console.print(table)
+    console.print(f"\nEnter a number (1-{len(routers)}) to select a router, or 'q' to cancel:")
+    try:
+      choice = input("> ").strip()
+    except (EOFError, KeyboardInterrupt):
+      console.print("\n[dim]Cancelled.[/dim]")
+      return
+
+    if choice.lower() == "q":
+      console.print("[dim]Cancelled.[/dim]")
+      return
+
+    try:
+      idx = int(choice) - 1
+      if not (0 <= idx < len(routers)):
+        raise ValueError
+    except ValueError:
+      console.print("[red]Invalid selection.[/red]")
+      return
+
+    selected = routers[idx]
+    config["router"] = selected.key
+    save_config(config)
+    console.print(f"\n[bold green]Router switched to:[/bold green] [cyan]{selected.name}[/cyan]")
 
   def _display_model_details(self, model: ModelInfo):
     """Displays technical details about the selected model."""
@@ -340,7 +450,9 @@ class App:
       return
 
     # 1. Resolve Configuration
-    config_default = load_config().get("default_model", MODEL_DEFAULT)
+    config = load_config()
+    router_config = config.get(self.router.key, {})
+    config_default = router_config.get("default_model", self.router.default_model)
     model_name = model_name or os.getenv("HF_MODEL", config_default)
     provider = provider or os.getenv("HF_PROVIDER")
 
@@ -419,5 +531,7 @@ if __name__ == "__main__":
     app.list_models()
   elif args.switch_model:
     app.switch_model()
+  elif args.switch_router:
+    app.switch_router()
   else:
     app.run_prompt(args.question, args.model, context_id=args.context)

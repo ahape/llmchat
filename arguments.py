@@ -8,6 +8,7 @@ class Args:
   question: str = None
   list_models: bool = False
   switch_model: bool = False
+  switch_router: bool = False
   model: str = None
   context: str = None
 
@@ -47,6 +48,13 @@ def parse_arguments():
     help="Interactively switch the default model, then exit"
   )
 
+  group.add_argument(
+    "--switch-router",
+    "-sr",
+    action="store_true",
+    help="Interactively switch the active API router (e.g., HuggingFace, Google), then exit"
+  )
+
   # Optional arguments (only valid when not using --list-models)
   group.add_argument(
     "--question",
@@ -82,6 +90,7 @@ def parse_arguments():
   return Args(
     list_models=bool(args.list_models),
     switch_model=bool(args.switch_model),
+    switch_router=bool(args.switch_router),
     question=args.question or args.positional_question,
     model=args.model,
     context=args.context
