@@ -38,6 +38,18 @@ console = Console()
 # --- Configuration & Data Structures ---
 
 MODEL_DEFAULT = "Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8"
+CONFIG_PATH = Path(__file__).parent / ".hf_config.json"
+
+def load_config() -> dict:
+  if CONFIG_PATH.exists():
+    try:
+      return json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+    except Exception:
+      return {}
+  return {}
+
+def save_config(config: dict):
+  CONFIG_PATH.write_text(json.dumps(config, indent=2), encoding="utf-8")
 
 @dataclass
 class ModelInfo:
@@ -258,6 +270,65 @@ class App:
           )
     console.print(table)
 
+  def switch_model(self):
+    """Interactively switch the default model."""
+    # Deduplicate models, showing cheapest provider for each
+    seen = {}
+    for m in self.registry.models:
+      if m.name not in seen:
+        best = self.registry.find_best_provider(m.name)
+        if best:
+          seen[m.name] = best
+
+    models = list(seen.values())
+    if not models:
+      console.print("[yellow]No models found[/yellow]")
+      return
+
+    # Show current default
+    config = load_config()
+    current = config.get("default_model", MODEL_DEFAULT)
+    console.print(f"\n[bold]Current default model:[/bold] [cyan]{current}[/cyan]\n")
+
+    # Display numbered list
+    table = Table(title="Available Models")
+    table.add_column("#", style="bold", justify="right")
+    table.add_column("Model", style="cyan", no_wrap=False)
+    table.add_column("Provider", style="green")
+    table.add_column("Input $/1M", style="blue")
+    table.add_column("Output $/1M", style="blue")
+    table.add_column("Context", style="magenta")
+
+    for i, m in enumerate(models, 1):
+      table.add_row(str(i), m.name, m.provider, f"{m.input_cost}", f"{m.output_cost}", m.context_length)
+
+    console.print(table)
+
+    # Prompt for selection
+    console.print(f"\nEnter a number (1-{len(models)}) to select a model, or 'q' to cancel:")
+    try:
+      choice = input("> ").strip()
+    except (EOFError, KeyboardInterrupt):
+      console.print("\n[dim]Cancelled.[/dim]")
+      return
+
+    if choice.lower() == "q":
+      console.print("[dim]Cancelled.[/dim]")
+      return
+
+    try:
+      idx = int(choice) - 1
+      if not (0 <= idx < len(models)):
+        raise ValueError
+    except ValueError:
+      console.print("[red]Invalid selection.[/red]")
+      return
+
+    selected = models[idx]
+    config["default_model"] = selected.name
+    save_config(config)
+    console.print(f"\n[bold green]Default model switched to:[/bold green] [cyan]{selected.name}[/cyan] ({selected.provider})")
+
   def _display_model_details(self, model: ModelInfo):
     """Displays technical details about the selected model."""
     console.print(f"  [cyan]Cost:[/cyan]     [magenta]${model.input_cost}/1M in, ${model.output_cost}/1M out[/magenta]")
@@ -269,7 +340,8 @@ class App:
       return
 
     # 1. Resolve Configuration
-    model_name = model_name or os.getenv("HF_MODEL", MODEL_DEFAULT)
+    config_default = load_config().get("default_model", MODEL_DEFAULT)
+    model_name = model_name or os.getenv("HF_MODEL", config_default)
     provider = provider or os.getenv("HF_PROVIDER")
 
     # 2. Resolve Model Info
@@ -345,5 +417,7 @@ if __name__ == "__main__":
 
   if args.list_models:
     app.list_models()
+  elif args.switch_model:
+    app.switch_model()
   else:
     app.run_prompt(args.question, args.model, context_id=args.context)

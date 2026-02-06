@@ -7,6 +7,7 @@ from console import console
 class Args:
   question: str = None
   list_models: bool = False
+  switch_model: bool = False
   model: str = None
   context: str = None
 
@@ -37,6 +38,13 @@ def parse_arguments():
     "-lm",
     action="store_true",
     help="List available models that are compatible with Huggle Face router/providers, then exit"
+  )
+
+  group.add_argument(
+    "--switch-model",
+    "-s",
+    action="store_true",
+    help="Interactively switch the default model, then exit"
   )
 
   # Optional arguments (only valid when not using --list-models)
@@ -73,6 +81,7 @@ def parse_arguments():
   args = parser.parse_args()
   return Args(
     list_models=bool(args.list_models),
+    switch_model=bool(args.switch_model),
     question=args.question or args.positional_question,
     model=args.model,
     context=args.context
