@@ -11,9 +11,36 @@ class Args:
   switch_router: bool = False
   model: str = None
   context: str = None
+  compose: bool = False
 
   def __post_init__(self):
-    if self.question == "-":
+    if self.compose:
+      import tempfile
+      import subprocess
+      # Create a temp file with .md extension for better syntax highlighting
+      with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        temp_path = f.name
+
+      try:
+        # Open nvim and wait for it to close
+        result = subprocess.run(['nvim', temp_path], check=False)
+        if result.returncode == 0:
+          # Read the composed content
+          with open(temp_path, 'r', encoding='utf-8') as f:
+            composed = f.read().strip()
+          if composed:
+            self.question = composed
+          else:
+            console.print("[yellow]No content composed. Exiting.[/yellow]")
+            sys.exit(0)
+        else:
+          console.print("[red]Editor exited with error.[/red]")
+          sys.exit(1)
+      finally:
+        # Clean up temp file
+        if os.path.exists(temp_path):
+          os.remove(temp_path)
+    elif self.question == "-":
       self.question = sys.stdin.read().strip()
 
 def parse_arguments():
@@ -27,6 +54,8 @@ def parse_arguments():
  %(prog)s --model "deepseek-ai/DeepSeek-V3.2" --question "..."
  %(prog)s --question "..." --model "deepseek-ai/DeepSeek-V3.2"
  %(prog)s "..." --model "deepseek-ai/DeepSeek-V3.2"
+ %(prog)s --compose                              # Opens Neovim to compose question
+ %(prog)s --compose --model "..."                # Compose with specific model
     """
   )
 
@@ -78,6 +107,12 @@ def parse_arguments():
     help="Maintain chat context in temp folder (optionally specify 'new' for fresh context)"
   )
 
+  parser.add_argument(
+    "--compose",
+    action="store_true",
+    help="Open Neovim to compose your question, then continue normally"
+  )
+
   # Positional argument (will be used if --question is not provided)
   group.add_argument(
     "positional_question",
@@ -93,5 +128,6 @@ def parse_arguments():
     switch_router=bool(args.switch_router),
     question=args.question or args.positional_question,
     model=args.model,
-    context=args.context
+    context=args.context,
+    compose=bool(args.compose)
   )
