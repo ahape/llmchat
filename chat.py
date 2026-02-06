@@ -483,7 +483,7 @@ class App:
       console.print(f"[yellow]Warning: Model '{model_name}' not found in CSV. Using raw string.[/yellow]\n")
 
     # 5. Execute API Call
-    console.print("[dim]Connecting to API...[/dim]")
+    console.print("[dim]Connecting to API...[/dim]\n")
     messages = ctx_mgr.get_messages_for_api(question)
     response_stream = self.llm.chat(full_model_id, messages, stream=True)
 

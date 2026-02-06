@@ -101,7 +101,8 @@ def parse_arguments():
   )
 
   parser.add_argument(
-    "-c", "--context",
+    "--context",
+    "-c",
     nargs="?",
     const="default",
     metavar="CONTEXT_ID",
@@ -110,6 +111,7 @@ def parse_arguments():
 
   parser.add_argument(
     "--compose",
+    "-vim",
     action="store_true",
     help="Open Neovim to compose your question, then continue normally"
   )
