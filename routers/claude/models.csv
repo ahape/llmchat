@@ -1,0 +1,7 @@
+Model,Provider,Tags,Input $/1M,Output $/1M,Context,Latency(s),Throughput(t/s),Tools,Structured
+claude-haiku-4-5,anthropic,fastest,0.25,1.25,200000,-,-,Yes,Yes
+claude-sonnet-4-5,anthropic,recommended,3.00,15.00,200000,-,-,Yes,Yes
+claude-opus-4-6,anthropic,most-capable,15.00,75.00,200000,-,-,Yes,Yes
+claude-haiku-4-5-20251001,anthropic,,0.25,1.25,200000,-,-,Yes,Yes
+claude-sonnet-4-5-20250929,anthropic,,3.00,15.00,200000,-,-,Yes,Yes
+claude-opus-4-6-20260207,anthropic,,15.00,75.00,200000,-,-,Yes,Yes
