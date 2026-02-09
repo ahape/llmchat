@@ -4,3 +4,4 @@ __pycache__/
 .ANTHROPIC_API_KEY
 .hf_config.json
 .llm_config.json
+.OPENROUTER_API_KEY
