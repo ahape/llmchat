@@ -49,7 +49,8 @@ if ($Context) {
   $pythonArgs += "--context"
 }
 
-& '.venv/Scripts/python.exe' @pythonArgs
+$pythonExe = Join-Path $PSScriptRoot ".venv/Scripts/python.exe"
+& $pythonExe @pythonArgs
 
 <#
 .SYNOPSIS
