@@ -22,7 +22,15 @@ param(
   [string]$Context
 )
 
-$pythonArgs = @('chat.py')
+
+# Get true source directory (follows symlink target)
+$sourceRoot = if ($PSCommandPath -and (Get-Item $PSCommandPath).LinkType) {
+    (Get-Item $PSCommandPath).Target | Split-Path -Parent
+} else {
+    $PSScriptRoot
+}
+$pythonExe = Join-Path $sourceRoot ".venv/Scripts/python.exe"
+$pythonArgs = @(Join-Path $sourceRoot 'chat.py')
 
 if ($Question) {
   $pythonArgs += $Question
@@ -49,7 +57,6 @@ if ($Context) {
   $pythonArgs += "--context"
 }
 
-$pythonExe = Join-Path $PSScriptRoot ".venv/Scripts/python.exe"
 & $pythonExe @pythonArgs
 
 <#
