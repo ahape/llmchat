@@ -4,6 +4,7 @@ import csv
 import json
 import time
 import tempfile
+import threading
 from pathlib import Path
 from dataclasses import dataclass, asdict
 from typing import List, Optional, Dict, Any, Generator, Tuple
@@ -490,11 +491,39 @@ class App:
     else:
       console.print(f"[yellow]Warning: Model '{model_name}' not found in CSV. Using raw string.[/yellow]\n")
 
-    # 5. Execute API Call
+    # 5. Execute API Call (in separate thread to allow CTRL+C)
     console.print("[dim]Connecting to API...[/dim]\n")
     messages = ctx_mgr.get_messages_for_api(question)
-    response_stream = self.llm.chat(full_model_id, messages, stream=True)
 
+    # Thread-safe container for the response stream
+    response_container = {"stream": None, "error": None, "ready": False}
+
+    def _make_request():
+      try:
+        response_container["stream"] = self.llm.chat(full_model_id, messages, stream=True)
+      except Exception as e:
+        response_container["error"] = e
+      finally:
+        response_container["ready"] = True
+
+    # Start request in background thread
+    request_thread = threading.Thread(target=_make_request, daemon=True)
+    request_thread.start()
+
+    # Wait for request to complete, but allow CTRL+C to interrupt
+    try:
+      while not response_container["ready"]:
+        time.sleep(0.1)  # Check every 100ms
+    except KeyboardInterrupt:
+      console.print("\n\n[yellow]Request cancelled by user (CTRL+C)[/yellow]")
+      return
+
+    # Check if request failed
+    if response_container["error"]:
+      console.print(f"[red]Request failed: {response_container['error']}[/red]")
+      return
+
+    response_stream = response_container["stream"]
     full_response = ""
     usage = None
     token_count = 0
