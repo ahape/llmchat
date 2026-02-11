@@ -9,7 +9,7 @@
   Send-Chat -SwitchModel
   Send-Chat -SwitchRouter
   Send-Chat "continue our conversation" -Context
-  Send-Chat "start fresh" -Context new
+  Send-Chat "start fresh conversation"
   Send-Chat -Compose
   Send-Chat -Compose -Model "deepseek-ai/DeepSeek-V3.2"
 #>
@@ -33,8 +33,8 @@ param(
   [Parameter(HelpMessage="Open Neovim to compose your question")]
   [switch]$Compose,
 
-  [Parameter(HelpMessage="Context ID (use 'new' for fresh context, or omit value for default)")]
-  [string]$Context
+  [Parameter(HelpMessage="Continue conversation from last message (without this flag, starts fresh)")]
+  [switch]$Context
 )
 
 $sourceRoot = "C:\Users\AlanHape\source\repos\llmchat\" # Change this when copying to other directories
@@ -60,9 +60,6 @@ if ($Compose) {
   $pythonArgs += "--compose"
 }
 if ($Context) {
-  $pythonArgs += @("--context", $Context)
-} elseif ($PSBoundParameters.ContainsKey('Context') -and [string]::IsNullOrEmpty($Context)) {
-  # Context switch was used without a value
   $pythonArgs += "--context"
 }
 

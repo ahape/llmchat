@@ -26,8 +26,9 @@ python3 chat.py --question "your question" --model "deepseek-ai/DeepSeek-V3.2"
 python3 chat.py --list-models          # show available models
 python3 chat.py --switch-model         # interactively change default model
 python3 chat.py --switch-router        # interactively change API router
-python3 chat.py "question" --context   # maintain chat history across calls
-python3 chat.py "question" -c new      # start fresh context
+python3 chat.py "question" --context   # continue conversation from last message
+python3 chat.py "question" -c          # short form for continuing conversation
+python3 chat.py "question"             # start fresh (overwrites previous context)
 ```
 
 There are no tests, linter, or build system.
@@ -55,6 +56,7 @@ Four source files, no package structure:
 - Each router has its own `routers/<key>/models.csv` with provider/pricing/context metadata
 - API model IDs use the model name directly
 - All console output uses `rich` library with color markup (`[cyan]`, `[red]`, etc.)
+- Context behavior: every chat message is saved to a temp file; `--context` flag continues from last message, without it starts fresh
 - To add a new router: add entry to `ROUTERS` dict, create `routers/<key>/models.csv`, add API key file to `.gitignore`
 
 ## Code Style

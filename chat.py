@@ -28,7 +28,7 @@ class Args:
   switch_model: bool = False
   switch_router: bool = False
   model: str = None
-  context: str = None
+  context: bool = False
   compose: bool = False
 
   def __post_init__(self):
@@ -72,6 +72,8 @@ def parse_arguments():
  %(prog)s --model "deepseek-ai/DeepSeek-V3.2" --question "..."
  %(prog)s --question "..." --model "deepseek-ai/DeepSeek-V3.2"
  %(prog)s "..." --model "deepseek-ai/DeepSeek-V3.2"
+ %(prog)s --context "follow up question"         # Continue from last message
+ %(prog)s -c "another follow up"                 # Short form
  %(prog)s --compose                              # Opens Neovim to compose question
  %(prog)s --compose --model "..."                # Compose with specific model
     """
@@ -121,10 +123,8 @@ def parse_arguments():
   parser.add_argument(
     "--context",
     "-c",
-    nargs="?",
-    const="default",
-    metavar="CONTEXT_ID",
-    help="Maintain chat context in temp folder (optionally specify 'new' for fresh context)"
+    action="store_true",
+    help="Continue the conversation from the last message (without this flag, starts fresh)"
   )
 
   parser.add_argument(
@@ -292,20 +292,20 @@ class ModelRegistry:
 
 class ContextManager:
   """Handles loading and saving chat history."""
-  
-  def __init__(self, context_id: str = None):
+
+  def __init__(self, continue_thread: bool = False):
     self.base_dir = Path(tempfile.gettempdir()) / "llm_chat_contexts"
     self.base_dir.mkdir(parents=True, exist_ok=True)
-    self.context_id = context_id
+    self.context_id = "default"  # Always use default context
     self.messages: List[Dict[str, str]] = []
-    
-    if self.context_id == "new":
-      self.save()
-      console.print("[dim]Cleared default context history ('--context new' argument specified)[/dim]")
-      self.context_id = "default"
 
-    if self.context_id:
+    if continue_thread:
+      # Load existing history to continue the conversation
       self._load()
+    else:
+      # Start fresh - clear any existing history
+      self.messages = []
+      console.print("[dim]Starting fresh conversation (use --context to continue from last message)[/dim]")
 
   def _load(self):
     file_path = self.context_path
@@ -323,9 +323,7 @@ class ContextManager:
     return self.base_dir / f"{self.context_id}.json"
 
   def save(self):
-    if not self.context_id:
-      return
-
+    """Always save to default context file."""
     data = {
       "id": self.context_id,
       "timestamp": datetime.now().isoformat(),
@@ -522,7 +520,7 @@ class App:
     save_config(config)
     console.print(f"\n[bold green]Router switched to:[/bold green] [cyan]{selected.name}[/cyan]")
 
-  def run_prompt(self, question: str, model_name: str = None, provider: str = None, context_id: str = None):
+  def run_prompt(self, question: str, model_name: str = None, provider: str = None, continue_context: bool = False):
     if not question:
       console.print("[red]Error: Question is required.[/red]")
       return
@@ -543,14 +541,12 @@ class App:
     # Fallback if model not in CSV but passed as arg
     full_model_id = selected_model.name if selected_model else model_name
 
-    # 3. Setup Context
-    ctx_mgr = ContextManager(context_id)
+    # 3. Setup Context (always save, optionally continue)
+    ctx_mgr = ContextManager(continue_thread=continue_context)
 
     # 4. Display UI Status
-    console.print(f"  [cyan]Slug:[/cyan]   {full_model_id}")
+    console.print(f"\n  [cyan]Slug:[/cyan]   {full_model_id}")
     console.print(f"  [cyan]Router:[/cyan]   {self.router.key}")
-    if context_id:
-      console.print(f"  [cyan]Context ID:[/cyan]  {context_id}")
 
     # 5. Execute API Call (in separate thread to allow CTRL+C)
     console.print("\n[dim italic]Connecting to API...[/dim italic]\n")
@@ -649,8 +645,8 @@ class App:
       cost_line += f"[dim] | Time: {total_time:.2f}s ({tokens_per_sec:.1f} tokens/s)[/dim]"
       console.print(cost_line)
 
-    # 7. Save Context
-    if context_id and full_response:
+    # 7. Save Context (always save)
+    if full_response:
       ctx_mgr.add_message("user", question)
       ctx_mgr.add_message("assistant", full_response)
       ctx_mgr.save()
@@ -670,4 +666,4 @@ if __name__ == "__main__":
   elif args.switch_router:
     app.switch_router()
   else:
-    app.run_prompt(args.question, args.model, context_id=args.context)
+    app.run_prompt(args.question, args.model, continue_context=args.context)
