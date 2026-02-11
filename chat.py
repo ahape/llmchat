@@ -5,6 +5,7 @@ import json
 import time
 import tempfile
 import threading
+import argparse
 from pathlib import Path
 from dataclasses import dataclass, asdict
 from typing import List, Optional, Dict, Any, Generator, Tuple
@@ -17,25 +18,140 @@ from rich.table import Table
 from rich.console import Console
 from openai import OpenAI, APIError
 
-# Local imports
-try:
-  from arguments import parse_arguments
-  from utilities import log_timing
-except ImportError:
-  # Fallback for standalone testing
-  import argparse
-  def parse_arguments():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--question", "-q", help="The question to ask")
-    parser.add_argument("--model", "-m", help="Model name")
-    parser.add_argument("--list-models", action="store_true")
-    parser.add_argument("--context", "-c", help="Context ID", default=None)
-    return parser.parse_args()
-  def log_timing(func):
-    return func
-
 # Initialize Console globally for UI
 console = Console()
+
+@dataclass
+class Args:
+  question: str = None
+  list_models: bool = False
+  switch_model: bool = False
+  switch_router: bool = False
+  model: str = None
+  context: str = None
+  compose: bool = False
+
+  def __post_init__(self):
+    if self.compose:
+      import tempfile
+      import subprocess
+      # Create a temp file with .md extension for better syntax highlighting
+      with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        temp_path = f.name
+
+      try:
+        # Open nvim and wait for it to close
+        result = subprocess.run(['nvim', temp_path], check=False)
+        if result.returncode == 0:
+          # Read the composed content
+          with open(temp_path, 'r', encoding='utf-8') as f:
+            composed = f.read().strip()
+          if composed:
+            self.question = composed
+          else:
+            console.print("[yellow]No content composed. Exiting.[/yellow]")
+            sys.exit(0)
+        else:
+          console.print("[red]Editor exited with error.[/red]")
+          sys.exit(1)
+      finally:
+        # Clean up temp file
+        if os.path.exists(temp_path):
+          os.remove(temp_path)
+    elif self.question == "-":
+      self.question = sys.stdin.read().strip()
+
+def parse_arguments():
+  parser = argparse.ArgumentParser(
+    description="Process a question with an optional model parameter",
+    formatter_class=argparse.RawDescriptionHelpFormatter,
+    epilog="""
+ Examples:
+ %(prog)s "why is the sky blue?"
+ %(prog)s --question "why is the sky blue?"
+ %(prog)s --model "deepseek-ai/DeepSeek-V3.2" --question "..."
+ %(prog)s --question "..." --model "deepseek-ai/DeepSeek-V3.2"
+ %(prog)s "..." --model "deepseek-ai/DeepSeek-V3.2"
+ %(prog)s --compose                              # Opens Neovim to compose question
+ %(prog)s --compose --model "..."                # Compose with specific model
+    """
+  )
+
+  # Mutually exclusive group for list-models
+  group = parser.add_mutually_exclusive_group()
+
+  group.add_argument(
+    "--list-models",
+    "-l",
+    "-lm",
+    action="store_true",
+    help="List available models that are compatible with Huggle Face router/providers, then exit"
+  )
+
+  group.add_argument(
+    "--switch-model",
+    "-s",
+    "-sm",
+    action="store_true",
+    help="Interactively switch the default model, then exit"
+  )
+
+  group.add_argument(
+    "--switch-router",
+    "-sr",
+    action="store_true",
+    help="Interactively switch the active API router (e.g., HuggingFace, Google), then exit"
+  )
+
+  # Optional arguments (only valid when not using --list-models)
+  group.add_argument(
+    "--question",
+    "-q",
+    type=str,
+    help="The question to process"
+  )
+
+  parser.add_argument(
+    "--model",
+    "-m",
+    type=str,
+    help="Model to use for processing (default: env['HF_MODEL'])"
+  )
+
+  parser.add_argument(
+    "--context",
+    "-c",
+    nargs="?",
+    const="default",
+    metavar="CONTEXT_ID",
+    help="Maintain chat context in temp folder (optionally specify 'new' for fresh context)"
+  )
+
+  parser.add_argument(
+    "--compose",
+    "-vim",
+    action="store_true",
+    help="Open Neovim to compose your question, then continue normally"
+  )
+
+  # Positional argument (will be used if --question is not provided)
+  group.add_argument(
+    "positional_question",
+    nargs="?",
+    type=str,
+    help="Question as a positional argument (alternative to --question)"
+  )
+
+  args = parser.parse_args()
+  return Args(
+    list_models=bool(args.list_models),
+    switch_model=bool(args.switch_model),
+    switch_router=bool(args.switch_router),
+    question=args.question or args.positional_question,
+    model=args.model,
+    context=args.context,
+    compose=bool(args.compose)
+  )
 
 # --- Configuration & Data Structures ---
 
@@ -283,7 +399,6 @@ class LLMClient:
       api_key=api_key,
     )
 
-  @log_timing
   def chat(self, model_id: str, messages: List[Dict[str, str]], stream: bool = True) -> Generator[str, None, None] | str:
     try:
       stream_options = {"include_usage": True} if stream else None
@@ -457,11 +572,6 @@ class App:
     save_config(config)
     console.print(f"\n[bold green]Router switched to:[/bold green] [cyan]{selected.name}[/cyan]")
 
-  def _display_model_details(self, model: ModelInfo):
-    """Displays technical details about the selected model."""
-    console.print(f"  [cyan]Cost:[/cyan]     [magenta]${model.input_cost}/1M in, ${model.output_cost}/1M out[/magenta]")
-    console.print(f"  [cyan]Details:[/cyan]  [magenta]{model.context_length} | Latency: {model.latency}s | Throughput: {model.throughput} t/s[/magenta]\n")
-
   def run_prompt(self, question: str, model_name: str = None, provider: str = None, context_id: str = None):
     if not question:
       console.print("[red]Error: Question is required.[/red]")
@@ -471,8 +581,7 @@ class App:
     config = load_config()
     router_config = config.get(self.router.key, {})
     config_default = router_config.get("default_model", self.router.default_model)
-    model_name = model_name or os.getenv("HF_MODEL", config_default)
-    provider = provider or os.getenv("HF_PROVIDER")
+    model_name = model_name or config_default
 
     # 2. Resolve Model Info
     selected_model: Optional[ModelInfo] = None
@@ -488,19 +597,13 @@ class App:
     ctx_mgr = ContextManager(context_id)
 
     # 4. Display UI Status
-    console.print("\n[bold]Processing...[/bold]\n", style="yellow")
-    console.print(f"  [cyan]Question:[/cyan] {question}")
-    console.print(f"  [cyan]Target:[/cyan]   {full_model_id}")
+    console.print(f"  [cyan]Slug:[/cyan]   {full_model_id}")
+    console.print(f"  [cyan]Router:[/cyan]   {self.router.key}")
     if context_id:
-      console.print(f"  [cyan]Context:[/cyan]  {context_id}")
-
-    if selected_model:
-      self._display_model_details(selected_model)
-    else:
-      console.print(f"[yellow]Warning: Model '{model_name}' not found in CSV. Using raw string.[/yellow]\n")
+      console.print(f"  [cyan]Context ID:[/cyan]  {context_id}")
 
     # 5. Execute API Call (in separate thread to allow CTRL+C)
-    console.print("[dim]Connecting to API...[/dim]\n")
+    console.print("\n[dim italic]Connecting to API...[/dim italic]\n")
     messages = ctx_mgr.get_messages_for_api(question)
 
     # Thread-safe container for the response stream
