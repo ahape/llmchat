@@ -3,7 +3,6 @@
 Step 1: Set the API key for your chosen router as an env var or dotfile:
 
 - **Google AI**: `GOOGLE_API_KEY` env var or `.GOOGLE_API_KEY` file
-- **Anthropic Claude**: `ANTHROPIC_API_KEY` env var or `.ANTHROPIC_API_KEY` file
 - **OpenRouter**: `OPENROUTER_API_KEY` env var or `.OPENROUTER_API_KEY` file
 
 Step 2: Create and activate the virtual environment

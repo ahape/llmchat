@@ -157,8 +157,8 @@ def parse_arguments():
 
 @dataclass
 class RouterConfig:
-  key: str              # "google", "claude", "openrouter"
-  name: str             # "Google AI", "Anthropic Claude", "OpenRouter"
+  key: str              # "google", "openrouter"
+  name: str             # "Google AI", "OpenRouter"
   base_url: str
   api_key_env: str      # env var name for API key
   api_key_file: str     # fallback file for API key
@@ -172,13 +172,6 @@ ROUTERS: Dict[str, RouterConfig] = {
     api_key_env="GOOGLE_API_KEY", api_key_file=".GOOGLE_API_KEY",
     csv_path="routers/google/models.csv",
     default_model="gemini-2.0-flash",
-  ),
-  "claude": RouterConfig(
-    key="claude", name="Anthropic Claude",
-    base_url="https://api.anthropic.com/v1/",
-    api_key_env="ANTHROPIC_API_KEY", api_key_file=".ANTHROPIC_API_KEY",
-    csv_path="routers/claude/models.csv",
-    default_model="claude-sonnet-4-5",
   ),
   "openrouter": RouterConfig(
     key="openrouter", name="OpenRouter",

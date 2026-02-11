@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-A CLI tool for querying LLMs via multiple OpenAI-compatible API routers (Google AI, Anthropic Claude, OpenRouter, and easily extensible). It sends questions to models listed in per-router CSV catalogs, streams responses with rich markdown rendering, and tracks token usage/cost.
+A CLI tool for querying LLMs via multiple OpenAI-compatible API routers (Google AI, OpenRouter, and easily extensible). It sends questions to models listed in per-router CSV catalogs, streams responses with rich markdown rendering, and tracks token usage/cost.
 
 ## Setup
 
@@ -16,7 +16,6 @@ pip install -r requirements.txt
 
 Requires an API key for the active router:
 - **Google AI**: `GOOGLE_API_KEY` env var or `.GOOGLE_API_KEY` file
-- **Anthropic Claude**: `ANTHROPIC_API_KEY` env var or `.ANTHROPIC_API_KEY` file
 - **OpenRouter**: `OPENROUTER_API_KEY` env var or `.OPENROUTER_API_KEY` file
 
 ## Running
@@ -39,7 +38,7 @@ Four source files, no package structure:
 
 - **`chat.py`** — Entry point and all core logic. Contains key structures:
   - `RouterConfig` — Dataclass defining a router (base URL, API key env/file, CSV path, defaults)
-  - `ROUTERS` — Registry dict mapping keys ("google", "claude", "openrouter") to `RouterConfig` instances
+  - `ROUTERS` — Registry dict mapping keys ("google", "openrouter") to `RouterConfig` instances
   - `ModelRegistry` — Loads the active router's `models.csv`, finds cheapest provider for a given model name
   - `ContextManager` — Persists multi-turn chat history as JSON files in system temp dir
   - `LLMClient` — OpenAI SDK wrapper parameterized with base URL and API key
