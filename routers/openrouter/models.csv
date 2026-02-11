@@ -1,0 +1,624 @@
+Model,Provider,Tags,Input $/1M,Output $/1M,Context,Latency(s),Throughput(t/s),Tools,Structured
+01-ai/yi-1.5-34b-chat,,Yi;in:text;out:text,,,4096,,,no,no
+01-ai/yi-34b,,Yi;in:text;out:text,,,4096,,,no,no
+01-ai/yi-34b-200k,,Yi;in:text;out:text,,,200000,,,no,no
+01-ai/yi-34b-chat,,Yi;in:text;out:text,,,4096,,,no,no
+01-ai/yi-6b,,Yi;in:text;out:text,,,4096,,,no,no
+01-ai/yi-large,,Yi;in:text;out:text,,,32768,,,no,no
+01-ai/yi-large-fc,,Yi;in:text;out:text,,,16384,,,no,no
+01-ai/yi-large-turbo,,Yi;in:text;out:text,,,4096,,,no,no
+01-ai/yi-vision,,"Yi;in:text,image;out:text",,,16384,,,no,no
+aetherwiing/mn-starcannon-12b,,Mistral;in:text;out:text,,,12000,,,no,no
+agentica-org/deepcoder-14b-preview,,Other;reasoning;in:text;out:text,,,96000,,,no,no
+ai21/jamba-1-5-large,,Other;in:text;out:text,,,256000,,,no,no
+ai21/jamba-1-5-mini,,Other;in:text;out:text,,,256000,,,no,no
+ai21/jamba-1.6-large,,Other;in:text;out:text,,,256000,,,no,no
+ai21/jamba-1.6-mini,,Other;in:text;out:text,,,256000,,,no,no
+ai21/jamba-instruct,,Other;in:text;out:text,,,256000,,,no,no
+ai21/jamba-large-1.7,AI21,Other;in:text;out:text;variant:standard;quant:fp8,2.000000,8.000000,256000,,,yes,yes
+ai21/jamba-mini-1.7,,Other;in:text;out:text,,,256000,,,no,no
+aion-labs/aion-1.0,AionLabs,Other;reasoning;in:text;out:text;variant:standard;quant:unknown,4.000000,8.000000,131072,,,no,no
+aion-labs/aion-1.0-mini,AionLabs,Other;reasoning;in:text;out:text;variant:standard;quant:bf16,0.700000,1.400000,131072,,,no,no
+aion-labs/aion-rp-llama-3.1-8b,AionLabs,Other;in:text;out:text;variant:standard;quant:unknown,0.800000,1.600000,32768,,,no,no
+alfredpros/codellama-7b-instruct-solidity,Featherless,Other;in:text;out:text;variant:standard;quant:unknown,0.800000,1.200000,4096,,,no,no
+alibaba/tongyi-deepresearch-30b-a3b,AtlasCloud,Other;reasoning;in:text;out:text;variant:standard;quant:fp8,0.090000,0.450000,131072,,,yes,yes
+all-hands/openhands-lm-32b-v0.1,,Other;in:text;out:text,,,131072,,,no,no
+allenai/llama-3.1-tulu-3-405b,,Other;in:text;out:text,,,,,,no,no
+allenai/molmo-2-8b,Parasail,"Other;in:text,image,video;out:text;variant:standard;quant:bf16",0.200000,0.200000,36864,,,no,no
+allenai/olmo-2-0325-32b-instruct,Cirrascale,Other;in:text;out:text;variant:standard;quant:unknown,0.050000,0.200000,128000,,,no,no
+allenai/olmo-3-32b-think,Parasail,Other;reasoning;in:text;out:text;variant:standard;quant:bf16,0.150000,0.500000,65536,,,no,yes
+allenai/olmo-3-7b-instruct,Parasail,Other;in:text;out:text;variant:standard;quant:bf16,0.100000,0.200000,65536,,,no,yes
+allenai/olmo-3-7b-think,Parasail,Other;reasoning;in:text;out:text;variant:standard;quant:bf16,0.120000,0.200000,65536,,,no,yes
+allenai/olmo-3.1-32b-instruct,DeepInfra,Other;in:text;out:text;variant:standard;quant:unknown,0.200000,0.600000,65536,,,yes,yes
+allenai/olmo-3.1-32b-think,Parasail,Other;reasoning;in:text;out:text;variant:standard;quant:bf16,0.150000,0.500000,65536,,,no,yes
+allenai/olmo-7b-instruct,,Other;in:text;out:text,,,2048,,,no,no
+alpindale/goliath-120b,Mancer,Llama2;in:text;out:text;variant:standard;quant:int4,3.750000,7.500000,6144,,,no,yes
+alpindale/magnum-72b,,Qwen;in:text;out:text,,,16384,,,no,no
+amazon/nova-2-lite-v1,Amazon Bedrock,"Nova;reasoning;in:text,image,video,file;out:text;variant:standard;quant:unknown",0.300000,2.500000,1000000,,,yes,no
+amazon/nova-lite-v1,Amazon Bedrock,"Nova;in:text,image;out:text;variant:standard;quant:unknown",0.060000,0.240000,300000,,,yes,no
+amazon/nova-micro-v1,Amazon Bedrock,Nova;in:text;out:text;variant:standard;quant:unknown,0.035000,0.140000,128000,,,yes,no
+amazon/nova-premier-v1,Amazon Bedrock,"Nova;in:text,image;out:text;variant:standard;quant:unknown",2.500000,12.500000,1000000,,,yes,no
+amazon/nova-pro-v1,Amazon Bedrock,"Nova;in:text,image;out:text;variant:standard;quant:unknown",0.800000,3.200000,300000,,,yes,no
+anthracite-org/magnum-v2-72b,,Qwen;in:text;out:text,,,32768,,,no,no
+anthracite-org/magnum-v4-72b,Mancer,Qwen;in:text;out:text;variant:standard;quant:fp8,3.000000,5.000000,16384,,,no,yes
+anthropic/claude-1,,Claude;in:text;out:text,,,100000,,,no,no
+anthropic/claude-1.2,,Claude;in:text;out:text,,,100000,,,no,no
+anthropic/claude-2,,Claude;in:text;out:text,,,200000,,,no,no
+anthropic/claude-2.0,,Claude;in:text;out:text,,,100000,,,no,no
+anthropic/claude-2.1,,Claude;in:text;out:text,,,200000,,,no,no
+anthropic/claude-3-haiku,Anthropic,"Claude;in:text,image;out:text;variant:standard;quant:unknown",0.250000,1.250000,200000,,,yes,no
+anthropic/claude-3-opus,,"Claude;in:text,image;out:text",,,200000,,,no,no
+anthropic/claude-3-sonnet,,"Claude;in:text,image;out:text",,,200000,,,no,no
+anthropic/claude-3.5-haiku,Amazon Bedrock,"Claude;in:text,image;out:text;variant:standard;quant:unknown",0.800000,4.000000,200000,,,yes,no
+anthropic/claude-3.5-haiku-20241022,,"Claude;in:text,image,file;out:text",,,200000,,,no,no
+anthropic/claude-3.5-sonnet,Amazon Bedrock,"Claude;in:text,image,file;out:text;variant:standard;quant:unknown",6.000000,30.000000,200000,,,yes,no
+anthropic/claude-3.5-sonnet-20240620,,"Claude;in:text,image,file;out:text",,,200000,,,no,no
+anthropic/claude-3.7-sonnet,Google Vertex,"Claude;reasoning;in:text,image,file;out:text;variant:standard;quant:unknown",3.000000,15.000000,200000,,,yes,no
+anthropic/claude-3.7-sonnet,Google Vertex,"Claude;reasoning;in:text,image,file;out:text;variant:thinking;quant:unknown",3.000000,15.000000,200000,,,yes,no
+anthropic/claude-haiku-4.5,Google Vertex,"Claude;reasoning;in:image,text;out:text;variant:standard;quant:unknown",1.000000,5.000000,200000,,,yes,no
+anthropic/claude-instant-1,,Claude;in:text;out:text,,,100000,,,no,no
+anthropic/claude-instant-1.0,,Claude;in:text;out:text,,,100000,,,no,no
+anthropic/claude-instant-1.1,,Claude;in:text;out:text,,,100000,,,no,no
+anthropic/claude-opus-4,Amazon Bedrock,"Claude;reasoning;in:image,text,file;out:text;variant:standard;quant:unknown",15.000000,75.000000,200000,,,yes,no
+anthropic/claude-opus-4.1,Amazon Bedrock,"Claude;reasoning;in:image,text,file;out:text;variant:standard;quant:unknown",15.000000,75.000000,200000,,,yes,no
+anthropic/claude-opus-4.5,Anthropic,"Claude;reasoning;in:file,image,text;out:text;variant:standard;quant:unknown",5.000000,25.000000,200000,,,yes,yes
+anthropic/claude-opus-4.6,Anthropic,"Claude;reasoning;in:text,image;out:text;variant:standard;quant:unknown",5.000000,25.000000,1000000,,,yes,yes
+anthropic/claude-sonnet-4,Google Vertex,"Claude;reasoning;in:image,text,file;out:text;variant:standard;quant:unknown",3.000000,15.000000,1000000,,,yes,no
+anthropic/claude-sonnet-4.5,Google Vertex,"Claude;reasoning;in:text,image,file;out:text;variant:standard;quant:unknown",3.000000,15.000000,1000000,,,yes,no
+arcee-ai/afm-4.5b,,Other;in:text;out:text,,,65536,,,no,no
+arcee-ai/arcee-blitz,,Other;in:text;out:text,,,32768,,,no,no
+arcee-ai/caller-large,,Other;in:text;out:text,,,32768,,,no,no
+arcee-ai/coder-large,Together,Other;in:text;out:text;variant:standard;quant:unknown,0.500000,0.800000,32768,,,no,no
+arcee-ai/maestro-reasoning,Together,Other;in:text;out:text;variant:standard;quant:unknown,0.900000,3.300000,131072,,,no,no
+arcee-ai/spotlight,Together,"Other;in:image,text;out:text;variant:standard;quant:unknown",0.180000,0.180000,131072,,,no,no
+arcee-ai/trinity-large-preview,Arcee AI,Other;in:text;out:text;variant:free;quant:unknown,0.000000,0.000000,131000,,,yes,yes
+arcee-ai/trinity-mini,Arcee AI,Other;reasoning;in:text;out:text;variant:free;quant:bf16,0.000000,0.000000,131072,,,yes,yes
+arcee-ai/trinity-mini,Clarifai,Other;reasoning;in:text;out:text;variant:standard;quant:bf16,0.045000,0.150000,131072,,,yes,yes
+arcee-ai/virtuoso-large,Together,Other;in:text;out:text;variant:standard;quant:unknown,0.750000,1.200000,131072,,,yes,no
+arcee-ai/virtuoso-medium-v2,,Other;in:text;out:text,,,131072,,,no,no
+arliai/qwq-32b-arliai-rpr-v1,,Other;reasoning;in:text;out:text,,,32768,,,no,no
+baai/bge-base-en-v1.5,DeepInfra,Other;in:text;out:embeddings;variant:standard;quant:unknown,0.005000,0.000000,512,,,no,yes
+baai/bge-large-en-v1.5,DeepInfra,Other;in:text;out:embeddings;variant:standard;quant:unknown,0.010000,0.000000,512,,,no,yes
+baai/bge-m3,DeepInfra,Other;in:text;out:embeddings;variant:standard;quant:fp32,0.010000,0.000000,8192,,,no,yes
+baidu/ernie-4.5-21b-a3b,NovitaAI,Other;reasoning;in:text;out:text;variant:standard;quant:bf16,0.070000,0.280000,120000,,,yes,no
+baidu/ernie-4.5-21b-a3b-thinking,NovitaAI,Other;reasoning;in:text;out:text;variant:standard;quant:fp8,0.070000,0.280000,131072,,,no,no
+baidu/ernie-4.5-300b-a47b,NovitaAI,Other;in:text;out:text;variant:standard;quant:bf16,0.280000,1.100000,123000,,,no,yes
+baidu/ernie-4.5-vl-28b-a3b,NovitaAI,"Other;reasoning;in:text,image;out:text;variant:standard;quant:fp16",0.140000,0.560000,30000,,,yes,no
+baidu/ernie-4.5-vl-424b-a47b,NovitaAI,"Other;reasoning;in:image,text;out:text;variant:standard;quant:fp16",0.420000,1.250000,123000,,,no,no
+bigcode/starcoder2-15b-instruct,,Other;in:text;out:text,,,16384,,,no,no
+black-forest-labs/flux.2-flex,Black Forest Labs,"Other;in:text,image;out:image;variant:standard;quant:unknown",0.000000,0.000000,67344,,,no,no
+black-forest-labs/flux.2-klein-4b,Black Forest Labs,"Other;in:text,image;out:image;variant:standard;quant:unknown",0.000000,0.000000,40960,,,no,no
+black-forest-labs/flux.2-max,Black Forest Labs,"Other;in:text,image;out:image;variant:standard;quant:unknown",0.000000,0.000000,46864,,,no,no
+black-forest-labs/flux.2-pro,Black Forest Labs,"Other;in:text,image;out:image;variant:standard;quant:unknown",0.000000,0.000000,46864,,,no,no
+bytedance-research/ui-tars-72b,,"Other;in:text,image;out:text",,,32768,,,no,no
+bytedance-seed/seed-1.6,Seed,"Other;reasoning;in:image,text,video;out:text;variant:standard;quant:fp8",0.250000,2.000000,262144,,,yes,yes
+bytedance-seed/seed-1.6-flash,Seed,"Other;reasoning;in:image,text,video;out:text;variant:standard;quant:fp8",0.075000,0.300000,262144,,,yes,yes
+bytedance-seed/seedream-4.5,Seed,"Other;in:image,text;out:image;variant:standard;quant:unknown",0.000000,0.000000,4096,,,no,no
+bytedance/seed-oss-36b-instruct,,Other;reasoning;in:text;out:text,,,131072,,,no,no
+bytedance/ui-tars-1.5-7b,Parasail,"Other;in:image,text;out:text;variant:standard;quant:bf16",0.100000,0.200000,128000,,,no,no
+cognitivecomputations/dolphin-llama-3-70b,,Llama3;in:text;out:text,,,8192,,,no,no
+cognitivecomputations/dolphin-mistral-24b-venice-edition,Venice,Other;in:text;out:text;variant:free;quant:fp16,0.000000,0.000000,32768,,,no,yes
+cognitivecomputations/dolphin-mixtral-8x22b,,Mistral;in:text;out:text,,,65536,,,no,no
+cognitivecomputations/dolphin-mixtral-8x7b,,Mistral;in:text;out:text,,,32768,,,no,no
+cognitivecomputations/dolphin3.0-mistral-24b,,Mistral;in:text;out:text,,,32768,,,no,no
+cognitivecomputations/dolphin3.0-r1-mistral-24b,,Mistral;reasoning;in:text;out:text,,,32768,,,no,no
+cohere/command,,Cohere;in:text;out:text,,,4096,,,no,no
+cohere/command-a,Cohere,Other;in:text;out:text;variant:standard;quant:unknown,2.500000,10.000000,256000,,,no,yes
+cohere/command-r,,Cohere;in:text;out:text,,,128000,,,no,no
+cohere/command-r-03-2024,,Cohere;in:text;out:text,,,128000,,,no,no
+cohere/command-r-08-2024,Cohere,Cohere;in:text;out:text;variant:standard;quant:unknown,0.150000,0.600000,128000,,,yes,yes
+cohere/command-r-plus,,Cohere;in:text;out:text,,,128000,,,no,no
+cohere/command-r-plus-04-2024,,Cohere;in:text;out:text,,,128000,,,no,no
+cohere/command-r-plus-08-2024,Cohere,Cohere;in:text;out:text;variant:standard;quant:unknown,2.500000,10.000000,128000,,,yes,yes
+cohere/command-r7b-12-2024,Cohere,Cohere;in:text;out:text;variant:standard;quant:unknown,0.037500,0.150000,128000,,,no,yes
+databricks/dbrx-instruct,,Other;in:text;out:text,,,32768,,,no,no
+deepcogito/cogito-v2-preview-deepseek-671b,,DeepSeek;reasoning;in:text;out:text,,,131072,,,no,no
+deepcogito/cogito-v2-preview-llama-109b-moe,,"Llama4;reasoning;in:image,text;out:text",,,131072,,,no,no
+deepcogito/cogito-v2-preview-llama-405b,,Llama3;reasoning;in:text;out:text,,,131072,,,no,no
+deepcogito/cogito-v2-preview-llama-70b,,Llama3;reasoning;in:text;out:text,,,131072,,,no,no
+deepcogito/cogito-v2.1-671b,Together,Other;reasoning;in:text;out:text;variant:standard;quant:unknown,1.250000,1.250000,128000,,,no,yes
+deepseek/deepseek-chat,Chutes,DeepSeek;in:text;out:text;variant:standard;quant:fp8,0.300000,1.200000,163840,,,no,yes
+deepseek/deepseek-chat-v2.5,,Other;in:text;out:text,,,128000,,,no,no
+deepseek/deepseek-chat-v3-0324,Chutes,DeepSeek;in:text;out:text;variant:standard;quant:fp8,0.190000,0.870000,163840,,,yes,yes
+deepseek/deepseek-chat-v3.1,SambaNova High Throughput,DeepSeek;reasoning;in:text;out:text;variant:standard;quant:fp8,0.150000,0.750000,32768,,,no,no
+deepseek/deepseek-prover-v2,,DeepSeek;in:text;out:text,,,163840,,,no,no
+deepseek/deepseek-r1,NovitaAI,DeepSeek;reasoning;in:text;out:text;variant:standard;quant:fp8,0.700000,2.500000,64000,,,yes,no
+deepseek/deepseek-r1-0528,Chutes,DeepSeek;reasoning;in:text;out:text;variant:standard;quant:fp8,0.400000,1.750000,163840,,,yes,yes
+deepseek/deepseek-r1-0528,ModelRun,DeepSeek;reasoning;in:text;out:text;variant:free;quant:fp4,0.000000,0.000000,163840,,,no,no
+deepseek/deepseek-r1-0528-qwen3-8b,,Qwen;reasoning;in:text;out:text,,,131072,,,no,no
+deepseek/deepseek-r1-distill-llama-70b,Chutes,Llama3;reasoning;in:text;out:text;variant:standard;quant:bf16,0.030000,0.110000,131072,,,no,yes
+deepseek/deepseek-r1-distill-llama-8b,,Llama3;reasoning;in:text;out:text,,,,,,no,no
+deepseek/deepseek-r1-distill-qwen-1.5b,,Other;reasoning;in:text;out:text,,,131072,,,no,no
+deepseek/deepseek-r1-distill-qwen-14b,,Qwen;reasoning;in:text;out:text,,,131072,,,no,no
+deepseek/deepseek-r1-distill-qwen-32b,NextBit,Qwen;reasoning;in:text;out:text;variant:standard;quant:fp8,0.290000,0.290000,32768,,,no,yes
+deepseek/deepseek-r1-distill-qwen-7b,,Qwen;reasoning;in:text;out:text,,,131072,,,no,no
+deepseek/deepseek-r1-zero,,Other;reasoning;in:text;out:text,,,163840,,,no,no
+deepseek/deepseek-v3-base,,DeepSeek;in:text;out:text,,,131072,,,no,no
+deepseek/deepseek-v3.1-base,,DeepSeek;in:text;out:text,,,163840,,,no,no
+deepseek/deepseek-v3.1-terminus,DeepInfra,DeepSeek;reasoning;in:text;out:text;variant:exacto;quant:fp4,0.210000,0.790000,163840,,,yes,yes
+deepseek/deepseek-v3.1-terminus,DeepInfra,DeepSeek;reasoning;in:text;out:text;variant:standard;quant:fp4,0.210000,0.790000,163840,,,yes,yes
+deepseek/deepseek-v3.2,Chutes,DeepSeek;reasoning;in:text;out:text;variant:standard;quant:fp8,0.250000,0.380000,163840,,,yes,yes
+deepseek/deepseek-v3.2-exp,NovitaAI,DeepSeek;reasoning;in:text;out:text;variant:standard;quant:fp8,0.270000,0.410000,163840,,,yes,yes
+deepseek/deepseek-v3.2-speciale,Chutes,DeepSeek;reasoning;in:text;out:text;variant:standard;quant:fp8,0.270000,0.410000,163840,,,no,yes
+eleutherai/llemma_7b,Featherless,Other;in:text;out:text;variant:standard;quant:unknown,0.800000,1.200000,4096,,,no,no
+essentialai/rnj-1-instruct,Together,Other;reasoning;in:text;out:text;variant:standard;quant:unknown,0.150000,0.150000,32768,,,no,yes
+eva-unit-01/eva-llama-3.33-70b,,Llama3;in:text;out:text,,,16384,,,no,no
+eva-unit-01/eva-qwen-2.5-14b,,Qwen;in:text;out:text,,,32768,,,no,no
+eva-unit-01/eva-qwen-2.5-32b,,Qwen;in:text;out:text,,,32000,,,no,no
+eva-unit-01/eva-qwen-2.5-72b,,Qwen;in:text;out:text,,,32000,,,no,no
+featherless/qwerky-72b,,Other;in:text;out:text,,,32768,,,no,no
+fireworks/firellava-13b,,"Llama2;in:text,image;out:text",,,4096,,,no,no
+google/gemini-2.0-flash-001,Google AI Studio,"Gemini;in:text,image,file,audio,video;out:text;variant:standard;quant:unknown",0.100000,0.400000,1048576,,,yes,yes
+google/gemini-2.0-flash-exp,,"Gemini;in:text,image;out:text",,,1048576,,,no,no
+google/gemini-2.0-flash-lite-001,Google Vertex,"Gemini;in:text,image,file,audio,video;out:text;variant:standard;quant:unknown",0.075000,0.300000,1048576,,,yes,yes
+google/gemini-2.5-flash,Google Vertex (Global),"Gemini;reasoning;in:file,image,text,audio,video;out:text;variant:standard;quant:unknown",0.300000,2.500000,1048576,,,yes,yes
+google/gemini-2.5-flash-image,Google AI Studio,"Gemini;in:image,text;out:image,text;variant:standard;quant:unknown",0.300000,2.500000,32768,,,no,yes
+google/gemini-2.5-flash-image-preview,,"Gemini;in:image,text;out:image,text",,,32768,,,no,no
+google/gemini-2.5-flash-lite,Google Vertex,"Gemini;reasoning;in:text,image,file,audio,video;out:text;variant:standard;quant:unknown",0.100000,0.400000,1048576,,,yes,yes
+google/gemini-2.5-flash-lite-preview-09-2025,Google Vertex,"Gemini;reasoning;in:text,image,file,audio,video;out:text;variant:standard;quant:unknown",0.100000,0.400000,1048576,,,yes,yes
+google/gemini-2.5-flash-preview-09-2025,Google AI Studio,"Gemini;reasoning;in:image,file,text,audio,video;out:text;variant:standard;quant:unknown",0.300000,2.500000,1048576,,,yes,yes
+google/gemini-2.5-pro,Google Vertex (Global),"Gemini;reasoning;in:text,image,file,audio,video;out:text;variant:standard;quant:unknown",1.250000,10.000000,1048576,,,yes,yes
+google/gemini-2.5-pro-exp-03-25,,"Gemini;in:text,image,file;out:text",,,1048576,,,no,no
+google/gemini-2.5-pro-preview,Google Vertex,"Gemini;reasoning;in:file,image,text,audio;out:text;variant:standard;quant:unknown",1.250000,10.000000,1048576,,,yes,yes
+google/gemini-2.5-pro-preview-05-06,Google Vertex,"Gemini;reasoning;in:text,image,file,audio,video;out:text;variant:standard;quant:unknown",1.250000,10.000000,1048576,,,yes,yes
+google/gemini-3-flash-preview,Google Vertex,"Gemini;reasoning;in:text,image,file,audio,video;out:text;variant:standard;quant:unknown",0.500000,3.000000,1048576,,,yes,yes
+google/gemini-3-pro-image-preview,Google AI Studio,"Gemini;reasoning;in:image,text;out:image,text;variant:standard;quant:unknown",2.000000,12.000000,65536,,,no,yes
+google/gemini-3-pro-preview,Google Vertex,"Gemini;reasoning;in:text,image,file,audio,video;out:text;variant:standard;quant:unknown",2.000000,12.000000,1048576,,,yes,yes
+google/gemini-embedding-001,Google AI Studio,Gemini;in:text;out:embeddings;variant:standard;quant:unknown,0.150000,0.000000,20000,,,no,yes
+google/gemini-exp-1114,,"Gemini;in:text,image;out:text",,,40960,,,no,no
+google/gemini-exp-1121,,"Gemini;in:text,image;out:text",,,40960,,,no,no
+google/gemini-flash-1.5,,"Gemini;in:text,image;out:text",,,1000000,,,no,no
+google/gemini-flash-1.5-8b,,"Gemini;in:text,image;out:text",,,1000000,,,no,no
+google/gemini-flash-1.5-exp,,"Gemini;in:text,image;out:text",,,1000000,,,no,no
+google/gemini-pro-1.5,,"Gemini;in:text,image;out:text",,,2000000,,,no,no
+google/gemini-pro-1.5-exp,,"Gemini;in:text,image;out:text",,,1000000,,,no,no
+google/gemma-2-27b-it,NextBit,Gemini;in:text;out:text;variant:standard;quant:int4,0.650000,0.650000,8192,,,no,yes
+google/gemma-2-9b-it,Nebius AI Studio (Fast),Gemini;in:text;out:text;variant:standard;quant:fp8,0.030000,0.090000,8192,,,no,no
+google/gemma-2b-it,,Gemini;in:text;out:text,,,8192,,,no,no
+google/gemma-3-12b-it,Chutes,"Gemini;in:text,image;out:text;variant:standard;quant:bf16",0.030000,0.100000,131072,,,no,yes
+google/gemma-3-12b-it,Google AI Studio,"Gemini;in:text,image;out:text;variant:free;quant:unknown",0.000000,0.000000,32768,,,no,no
+google/gemma-3-1b-it,,"Gemini;in:text,image;out:text",,,32000,,,no,no
+google/gemma-3-27b-it,Chutes,"Gemini;in:text,image;out:text;variant:standard;quant:bf16",0.040000,0.150000,128000,,,yes,yes
+google/gemma-3-27b-it,Google AI Studio,"Gemini;in:text,image;out:text;variant:free;quant:unknown",0.000000,0.000000,131072,,,no,yes
+google/gemma-3-4b-it,Chutes,"Gemini;in:text,image;out:text;variant:standard;quant:unknown",0.017030,0.068154,96000,,,no,no
+google/gemma-3-4b-it,Google AI Studio,"Gemini;in:text,image;out:text;variant:free;quant:unknown",0.000000,0.000000,32768,,,no,yes
+google/gemma-3n-e2b-it,Google AI Studio,Other;in:text;out:text;variant:free;quant:unknown,0.000000,0.000000,8192,,,no,yes
+google/gemma-3n-e4b-it,Google AI Studio,Other;in:text;out:text;variant:free;quant:unknown,0.000000,0.000000,8192,,,no,yes
+google/gemma-3n-e4b-it,Together,Other;in:text;out:text;variant:standard;quant:unknown,0.020000,0.040000,32768,,,no,no
+google/gemma-7b-it,,Gemini;in:text;out:text,,,8192,,,no,no
+google/palm-2-chat-bison,,PaLM;in:text;out:text,,,9216,,,no,no
+google/palm-2-chat-bison-32k,,PaLM;in:text;out:text,,,32760,,,no,no
+google/palm-2-codechat-bison,,PaLM;in:text;out:text,,,7168,,,no,no
+google/palm-2-codechat-bison-32k,,PaLM;in:text;out:text,,,32760,,,no,no
+gryphe/mythomax-l2-13b,NextBit,Llama2;in:text;out:text;variant:standard;quant:int4,0.060000,0.060000,4096,,,no,yes
+gryphe/mythomist-7b,,Mistral;in:text;out:text,,,32768,,,no,no
+huggingfaceh4/zephyr-7b-beta,,Mistral;in:text;out:text,,,4096,,,no,no
+huggingfaceh4/zephyr-orpo-141b-a35b,,Mistral;in:text;out:text,,,65536,,,no,no
+ibm-granite/granite-4.0-h-micro,Cloudflare,Other;in:text;out:text;variant:standard;quant:unknown,0.017000,0.110000,131000,,,no,no
+inception/mercury,Inception,Other;in:text;out:text;variant:standard;quant:unknown,0.250000,1.000000,128000,,,yes,yes
+inception/mercury-coder,Inception,Other;in:text;out:text;variant:standard;quant:unknown,0.250000,1.000000,128000,,,yes,yes
+infermatic/mn-inferor-12b,,Mistral;in:text;out:text,,,32000,,,no,no
+inflatebot/mn-mag-mell-r1,,Mistral;in:text;out:text,,,32000,,,no,no
+inflection/inflection-3-pi,Inflection,Other;in:text;out:text;variant:standard;quant:unknown,2.500000,10.000000,8000,,,no,no
+inflection/inflection-3-productivity,Inflection,Other;in:text;out:text;variant:standard;quant:unknown,2.500000,10.000000,8000,,,no,no
+intel/neural-chat-7b,,Mistral;in:text;out:text,,,4096,,,no,no
+intfloat/e5-base-v2,DeepInfra,Other;in:text;out:embeddings;variant:standard;quant:unknown,0.005000,0.000000,512,,,no,yes
+intfloat/e5-large-v2,DeepInfra,Other;in:text;out:embeddings;variant:standard;quant:unknown,0.010000,0.000000,512,,,no,yes
+intfloat/multilingual-e5-large,DeepInfra,Other;in:text;out:embeddings;variant:standard;quant:fp32,0.010000,0.000000,512,,,no,yes
+jebcarter/psyfighter-13b,,Llama2;in:text;out:text,,,4096,,,no,no
+jondurbin/airoboros-l2-70b,,Llama2;in:text;out:text,,,4096,,,no,no
+jondurbin/bagel-34b,,Yi;in:text;out:text,,,200000,,,no,no
+koboldai/psyfighter-13b-2,,Llama2;in:text;out:text,,,4096,,,no,no
+kwaipilot/kat-coder-pro,AtlasCloud,Other;in:text;out:text;variant:standard;quant:fp16,0.207000,0.828000,256000,,,yes,yes
+latitudegames/wayfarer-large-70b-llama-3.3,,Llama3;in:text;out:text,,,128000,,,no,no
+liquid/lfm-2.2-6b,Liquid,Other;in:text;out:text;variant:standard;quant:unknown,0.010000,0.020000,32768,,,no,no
+liquid/lfm-2.5-1.2b-instruct,Liquid,Other;in:text;out:text;variant:free;quant:unknown,0.000000,0.000000,32768,,,no,no
+liquid/lfm-2.5-1.2b-thinking,Liquid,Other;reasoning;in:text;out:text;variant:free;quant:unknown,0.000000,0.000000,32768,,,no,no
+liquid/lfm-3b,,Other;in:text;out:text,,,32768,,,no,no
+liquid/lfm-40b,,Other;in:text;out:text,,,32768,,,no,no
+liquid/lfm-7b,,Other;in:text;out:text,,,32768,,,no,no
+liquid/lfm2-8b-a1b,Liquid,Other;in:text;out:text;variant:standard;quant:unknown,0.010000,0.020000,32768,,,no,no
+liuhaotian/llava-13b,,"Llama2;in:text,image;out:text",,,2048,,,no,no
+liuhaotian/llava-yi-34b,,"Yi;in:text,image;out:text",,,4096,,,no,no
+lizpreciatior/lzlv-70b-fp16-hf,,Llama2;in:text;out:text,,,4096,,,no,no
+lynn/soliloquy-l3,,Llama3;in:text;out:text,,,24576,,,no,no
+lynn/soliloquy-v3,,Llama3;in:text;out:text,,,32768,,,no,no
+mancer/weaver,Mancer,Llama2;in:text;out:text;variant:standard;quant:fp8,0.750000,1.000000,8000,,,no,yes
+mattshumer/reflection-70b,,Llama3;in:text;out:text,,,131072,,,no,no
+meituan/longcat-flash-chat,AtlasCloud,Other;in:text;out:text;variant:standard;quant:fp8,0.200000,0.800000,131072,,,no,no
+meta-llama/codellama-34b-instruct,,Llama2;in:text;out:text,,,8192,,,no,no
+meta-llama/codellama-70b-instruct,,Llama2;in:text;out:text,,,2048,,,no,no
+meta-llama/llama-2-13b-chat,,Llama2;in:text;out:text,,,4096,,,no,no
+meta-llama/llama-2-70b-chat,,Llama2;in:text;out:text,,,4096,,,no,no
+meta-llama/llama-3-70b,,Llama3;in:text;out:text,,,8192,,,no,no
+meta-llama/llama-3-70b-instruct,NovitaAI,Llama3;in:text;out:text;variant:standard;quant:fp8,0.510000,0.740000,8192,,,no,yes
+meta-llama/llama-3-8b,,Llama3;in:text;out:text,,,8192,,,no,no
+meta-llama/llama-3-8b-instruct,DeepInfra,Llama3;in:text;out:text;variant:standard;quant:bf16,0.030000,0.040000,8192,,,yes,yes
+meta-llama/llama-3.1-405b,Hyperbolic,Llama3;in:text;out:text;variant:standard;quant:bf16,4.000000,4.000000,32768,,,no,no
+meta-llama/llama-3.1-405b-instruct,Hyperbolic,Llama3;in:text;out:text;variant:standard;quant:bf16,4.000000,4.000000,131000,,,no,no
+meta-llama/llama-3.1-70b-instruct,Hyperbolic,Llama3;in:text;out:text;variant:standard;quant:fp8,0.400000,0.400000,131072,,,no,no
+meta-llama/llama-3.1-8b-instruct,NovitaAI,Llama3;in:text;out:text;variant:standard;quant:fp8,0.020000,0.050000,16384,,,no,no
+meta-llama/llama-3.2-11b-vision-instruct,DeepInfra,"Llama3;in:text,image;out:text;variant:standard;quant:fp8",0.049000,0.049000,131072,,,no,yes
+meta-llama/llama-3.2-1b-instruct,Cloudflare,Llama3;in:text;out:text;variant:standard;quant:unknown,0.027000,0.200000,60000,,,no,no
+meta-llama/llama-3.2-3b-instruct,DeepInfra,Llama3;in:text;out:text;variant:standard;quant:bf16,0.020000,0.020000,131072,,,no,yes
+meta-llama/llama-3.2-3b-instruct,Venice,Llama3;in:text;out:text;variant:free;quant:fp16,0.000000,0.000000,131072,,,no,no
+meta-llama/llama-3.2-90b-vision-instruct,,"Llama3;in:text,image;out:text",,,131072,,,no,no
+meta-llama/llama-3.3-70b-instruct,DeepInfra (Turbo),Llama3;in:text;out:text;variant:standard;quant:fp8,0.100000,0.320000,131072,,,yes,yes
+meta-llama/llama-3.3-70b-instruct,OpenInference,Llama3;in:text;out:text;variant:free;quant:int8,0.000000,0.000000,128000,,,yes,no
+meta-llama/llama-3.3-8b-instruct,,Llama3;in:text;out:text,,,128000,,,no,no
+meta-llama/llama-4-maverick,DeepInfra,"Llama4;in:text,image;out:text;variant:standard;quant:fp8",0.150000,0.600000,1048576,,,no,yes
+meta-llama/llama-4-scout,DeepInfra,"Llama4;in:text,image;out:text;variant:standard;quant:fp8",0.080000,0.300000,327680,,,no,yes
+meta-llama/llama-guard-2-8b,Together,Llama3;in:text;out:text;variant:standard;quant:unknown,0.200000,0.200000,8192,,,no,no
+meta-llama/llama-guard-3-8b,Nebius Token Factory,Llama3;in:text;out:text;variant:standard;quant:unknown,0.020000,0.060000,131072,,,no,no
+meta-llama/llama-guard-4-12b,DeepInfra,"Other;in:image,text;out:text;variant:standard;quant:bf16",0.180000,0.180000,163840,,,no,yes
+microsoft/mai-ds-r1,,DeepSeek;reasoning;in:text;out:text,,,163840,,,no,no
+microsoft/phi-3-medium-128k-instruct,,Other;in:text;out:text,,,128000,,,no,no
+microsoft/phi-3-medium-4k-instruct,,Other;in:text;out:text,,,4000,,,no,no
+microsoft/phi-3-mini-128k-instruct,,Other;in:text;out:text,,,128000,,,no,no
+microsoft/phi-3.5-mini-128k-instruct,,Other;in:text;out:text,,,128000,,,no,no
+microsoft/phi-4,NextBit,Other;in:text;out:text;variant:standard;quant:int4,0.060000,0.140000,16384,,,no,yes
+microsoft/phi-4-multimodal-instruct,,"Other;in:text,image;out:text",,,131072,,,no,no
+microsoft/phi-4-reasoning,,Other;reasoning;in:text;out:text,,,32768,,,no,no
+microsoft/phi-4-reasoning-plus,,Other;reasoning;in:text;out:text,,,32768,,,no,no
+microsoft/wizardlm-2-7b,,Mistral;in:text;out:text,,,32000,,,no,no
+microsoft/wizardlm-2-8x22b,DeepInfra,Mistral;in:text;out:text;variant:standard;quant:bf16,0.480000,0.480000,65536,,,no,yes
+migtissera/synthia-70b,,Llama2;in:text;out:text,,,8192,,,no,no
+minimax/minimax-01,MiniMax,"Other;in:text,image;out:text;variant:standard;quant:unknown",0.200000,1.100000,1000192,,,no,no
+minimax/minimax-m1,MiniMax,Other;reasoning;in:text;out:text;variant:standard;quant:unknown,0.400000,2.200000,1000000,,,no,no
+minimax/minimax-m2,AtlasCloud,Other;reasoning;in:text;out:text;variant:standard;quant:fp8,0.255000,1.000000,196608,,,yes,no
+minimax/minimax-m2-her,MiniMax,Other;in:text;out:text;variant:standard;quant:unknown,0.300000,1.200000,65536,,,no,no
+minimax/minimax-m2.1,DeepInfra,Other;reasoning;in:text;out:text;variant:standard;quant:fp8,0.270000,0.950000,196608,,,yes,yes
+mistralai/codestral-2501,,Mistral;in:text;out:text,,,256000,,,no,no
+mistralai/codestral-2508,Mistral,Mistral;in:text;out:text;variant:standard;quant:unknown,0.300000,0.900000,256000,,,yes,yes
+mistralai/codestral-embed-2505,Mistral,Mistral;in:text;out:embeddings;variant:standard;quant:unknown,0.150000,0.000000,8192,,,no,yes
+mistralai/codestral-mamba,,Mistral;in:text;out:text,,,256000,,,no,no
+mistralai/devstral-2512,Chutes,Mistral;in:text;out:text;variant:standard;quant:fp8,0.050000,0.220000,262144,,,yes,yes
+mistralai/devstral-medium,Mistral,Mistral;in:text;out:text;variant:standard;quant:unknown,0.400000,2.000000,131072,,,yes,yes
+mistralai/devstral-small,Mistral,Mistral;in:text;out:text;variant:standard;quant:unknown,0.100000,0.300000,131072,,,yes,yes
+mistralai/devstral-small-2505,,Mistral;in:text;out:text,,,131072,,,no,no
+mistralai/magistral-medium-2506,,Mistral;reasoning;in:text;out:text,,,40960,,,no,no
+mistralai/magistral-small-2506,,Mistral;reasoning;in:text;out:text,,,40000,,,no,no
+mistralai/ministral-14b-2512,Mistral,"Mistral;in:text,image;out:text;variant:standard;quant:unknown",0.200000,0.200000,262144,,,yes,yes
+mistralai/ministral-3b,Mistral,Mistral;in:text;out:text;variant:standard;quant:unknown,0.040000,0.040000,131072,,,yes,yes
+mistralai/ministral-3b-2512,Mistral,"Mistral;in:text,image;out:text;variant:standard;quant:unknown",0.100000,0.100000,131072,,,yes,yes
+mistralai/ministral-8b,Mistral,Mistral;in:text;out:text;variant:standard;quant:unknown,0.100000,0.100000,131072,,,yes,yes
+mistralai/ministral-8b-2512,Mistral,"Mistral;in:text,image;out:text;variant:standard;quant:unknown",0.150000,0.150000,262144,,,yes,yes
+mistralai/mistral-7b-instruct,Together,Mistral;in:text;out:text;variant:standard;quant:unknown,0.200000,0.200000,32768,,,no,no
+mistralai/mistral-7b-instruct-v0.1,Cloudflare,Mistral;in:text;out:text;variant:standard;quant:unknown,0.110000,0.190000,2824,,,no,no
+mistralai/mistral-7b-instruct-v0.2,Together,Mistral;in:text;out:text;variant:standard;quant:unknown,0.200000,0.200000,32768,,,no,no
+mistralai/mistral-7b-instruct-v0.3,Together,Mistral;in:text;out:text;variant:standard;quant:unknown,0.200000,0.200000,32768,,,no,no
+mistralai/mistral-embed-2312,Mistral,Mistral;in:text;out:embeddings;variant:standard;quant:unknown,0.100000,0.000000,8192,,,no,yes
+mistralai/mistral-large,Mistral,Mistral;in:text;out:text;variant:standard;quant:unknown,2.000000,6.000000,128000,,,yes,yes
+mistralai/mistral-large-2407,Mistral,Mistral;in:text;out:text;variant:standard;quant:unknown,2.000000,6.000000,131072,,,yes,yes
+mistralai/mistral-large-2411,Mistral,Mistral;in:text;out:text;variant:standard;quant:unknown,2.000000,6.000000,131072,,,yes,yes
+mistralai/mistral-large-2512,Mistral,"Mistral;in:text,image;out:text;variant:standard;quant:unknown",0.500000,1.500000,262144,,,yes,yes
+mistralai/mistral-medium,,Mistral;in:text;out:text,,,32000,,,no,no
+mistralai/mistral-medium-3,Mistral,"Mistral;in:text,image;out:text;variant:standard;quant:unknown",0.400000,2.000000,131072,,,yes,yes
+mistralai/mistral-medium-3.1,Mistral,"Mistral;in:text,image;out:text;variant:standard;quant:unknown",0.400000,2.000000,131072,,,yes,yes
+mistralai/mistral-nemo,DeepInfra,Mistral;in:text;out:text;variant:standard;quant:fp8,0.020000,0.040000,131072,,,no,yes
+mistralai/mistral-saba,Mistral,Mistral;in:text;out:text;variant:standard;quant:unknown,0.200000,0.600000,32768,,,yes,yes
+mistralai/mistral-small,,Mistral;in:text;out:text,,,32000,,,no,no
+mistralai/mistral-small-24b-instruct-2501,DeepInfra,Mistral;in:text;out:text;variant:standard;quant:fp8,0.050000,0.080000,32768,,,no,yes
+mistralai/mistral-small-3.1-24b-instruct,Chutes,"Mistral;in:text,image;out:text;variant:standard;quant:bf16",0.030000,0.110000,131072,,,yes,yes
+mistralai/mistral-small-3.1-24b-instruct,Venice,"Mistral;in:text,image;out:text;variant:free;quant:fp8",0.000000,0.000000,128000,,,yes,yes
+mistralai/mistral-small-3.2-24b-instruct,Chutes,"Mistral;in:image,text;out:text;variant:standard;quant:bf16",0.060000,0.180000,131072,,,yes,yes
+mistralai/mistral-small-creative,Mistral,Mistral;in:text;out:text;variant:standard;quant:unknown,0.100000,0.300000,32768,,,yes,no
+mistralai/mistral-tiny,Mistral,Mistral;in:text;out:text;variant:standard;quant:unknown,0.250000,0.250000,32768,,,yes,yes
+mistralai/mixtral-8x22b,,Mistral;in:text;out:text,,,65536,,,no,no
+mistralai/mixtral-8x22b-instruct,Mistral,Mistral;in:text;out:text;variant:standard;quant:unknown,2.000000,6.000000,65536,,,yes,yes
+mistralai/mixtral-8x7b-instruct,DeepInfra,Mistral;in:text;out:text;variant:standard;quant:fp8,0.540000,0.540000,32768,,,yes,yes
+mistralai/pixtral-12b,Hyperbolic,"Mistral;in:text,image;out:text;variant:standard;quant:bf16",0.100000,0.100000,32768,,,no,no
+mistralai/pixtral-large-2411,Mistral,"Mistral;in:text,image;out:text;variant:standard;quant:unknown",2.000000,6.000000,131072,,,yes,yes
+mistralai/voxtral-small-24b-2507,Mistral,"Mistral;in:text,audio;out:text;variant:standard;quant:unknown",0.100000,0.300000,32000,,,yes,yes
+moonshotai/kimi-dev-72b,,Other;reasoning;in:text;out:text,,,131072,,,no,no
+moonshotai/kimi-k2,Nebius Token Factory,Other;in:text;out:text;variant:standard;quant:fp4,0.500000,2.400000,131072,,,yes,no
+moonshotai/kimi-k2-0905,Chutes,Other;in:text;out:text;variant:standard;quant:fp8,0.390000,1.900000,262144,,,yes,yes
+moonshotai/kimi-k2-0905,Moonshot AI,Other;in:text;out:text;variant:exacto;quant:unknown,0.600000,2.500000,262144,,,yes,yes
+moonshotai/kimi-k2-thinking,Chutes,Other;reasoning;in:text;out:text;variant:standard;quant:int4,0.400000,1.750000,262144,,,yes,yes
+moonshotai/kimi-k2.5,DeepInfra,"Other;reasoning;in:text,image;out:text;variant:standard;quant:unknown",0.450000,2.250000,262144,,,yes,yes
+moonshotai/kimi-vl-a3b-thinking,,"Other;reasoning;in:image,text;out:text",,,131072,,,no,no
+moonshotai/moonlight-16b-a3b-instruct,,Other;in:text;out:text,,,8192,,,no,no
+morph/morph-v2,,Other;in:text;out:text,,,32000,,,no,no
+morph/morph-v3-fast,Morph,Other;in:text;out:text;variant:standard;quant:unknown,0.800000,1.200000,81920,,,no,no
+morph/morph-v3-large,Morph,Other;in:text;out:text;variant:standard;quant:unknown,0.900000,1.900000,262144,,,no,no
+neversleep/llama-3-lumimaid-70b,,Llama3;in:text;out:text,,,8192,,,no,no
+neversleep/llama-3-lumimaid-8b,,Llama3;in:text;out:text,,,24576,,,no,no
+neversleep/llama-3.1-lumimaid-70b,,Llama3;in:text;out:text,,,131072,,,no,no
+neversleep/llama-3.1-lumimaid-8b,NextBit,Llama3;in:text;out:text;variant:standard;quant:int4,0.090000,0.600000,32768,,,no,yes
+neversleep/noromaid-20b,NextBit,Llama2;in:text;out:text;variant:standard;quant:int4,1.000000,1.750000,4096,,,no,yes
+neversleep/noromaid-mixtral-8x7b-instruct,,Mistral;in:text;out:text,,,8000,,,no,no
+nex-agi/deepseek-v3.1-nex-n1,SiliconFlow,DeepSeek;in:text;out:text;variant:standard;quant:fp8,0.270000,1.000000,131072,,,yes,yes
+nothingiisreal/mn-celeste-12b,,Mistral;in:text;out:text,,,32000,,,no,no
+nousresearch/deephermes-3-llama-3-8b-preview,,Other;in:text;out:text,,,131072,,,no,no
+nousresearch/deephermes-3-mistral-24b-preview,Chutes,Other;reasoning;in:text;out:text;variant:standard;quant:bf16,0.020000,0.100000,32768,,,yes,yes
+nousresearch/hermes-2-pro-llama-3-8b,NovitaAI,Llama3;in:text;out:text;variant:standard;quant:fp16,0.140000,0.140000,8192,,,no,yes
+nousresearch/hermes-2-theta-llama-3-8b,,Llama3;in:text;out:text,,,16384,,,no,no
+nousresearch/hermes-3-llama-3.1-405b,DeepInfra,Llama3;in:text;out:text;variant:standard;quant:fp8,1.000000,1.000000,131072,,,no,yes
+nousresearch/hermes-3-llama-3.1-405b,Venice (Beta),Llama3;in:text;out:text;variant:free;quant:fp8,0.000000,0.000000,131072,,,no,no
+nousresearch/hermes-3-llama-3.1-70b,NextBit,Llama3;in:text;out:text;variant:standard;quant:fp8,0.300000,0.300000,65536,,,no,yes
+nousresearch/hermes-4-405b,Nebius Token Factory,Other;reasoning;in:text;out:text;variant:standard;quant:fp8,1.000000,3.000000,131072,,,no,yes
+nousresearch/hermes-4-70b,Chutes,Llama3;reasoning;in:text;out:text;variant:standard;quant:bf16,0.110000,0.380000,131072,,,yes,yes
+nousresearch/nous-capybara-34b,,Llama2;in:text;out:text,,,200000,,,no,no
+nousresearch/nous-capybara-7b,,Mistral;in:text;out:text,,,8192,,,no,no
+nousresearch/nous-hermes-2-mistral-7b-dpo,,Mistral;in:text;out:text,,,8192,,,no,no
+nousresearch/nous-hermes-2-mixtral-8x7b-dpo,,Mistral;in:text;out:text,,,32768,,,no,no
+nousresearch/nous-hermes-2-mixtral-8x7b-sft,,Mistral;in:text;out:text,,,32768,,,no,no
+nousresearch/nous-hermes-2-vision-7b,,"Mistral;in:text,image;out:text",,,4096,,,no,no
+nousresearch/nous-hermes-llama2-13b,,Llama2;in:text;out:text,,,4096,,,no,no
+nousresearch/nous-hermes-llama2-70b,,Llama2;in:text;out:text,,,4096,,,no,no
+nousresearch/nous-hermes-yi-34b,,Yi;in:text;out:text,,,4096,,,no,no
+nvidia/llama-3.1-nemotron-70b-instruct,DeepInfra,Llama3;in:text;out:text;variant:standard;quant:fp8,1.200000,1.200000,131072,,,yes,yes
+nvidia/llama-3.1-nemotron-nano-8b-v1,,Other;in:text;out:text,,,131072,,,no,no
+nvidia/llama-3.1-nemotron-ultra-253b-v1,Nebius Token Factory,Llama3;reasoning;in:text;out:text;variant:standard;quant:fp8,0.600000,1.800000,131072,,,no,yes
+nvidia/llama-3.3-nemotron-super-49b-v1,,Other;in:text;out:text,,,131072,,,no,no
+nvidia/llama-3.3-nemotron-super-49b-v1.5,DeepInfra,Llama3;reasoning;in:text;out:text;variant:standard;quant:fp8,0.100000,0.400000,131072,,,yes,yes
+nvidia/nemotron-3-nano-30b-a3b,DeepInfra,Other;reasoning;in:text;out:text;variant:standard;quant:fp4,0.050000,0.200000,262144,,,yes,yes
+nvidia/nemotron-3-nano-30b-a3b,NVIDIA,Other;reasoning;in:text;out:text;variant:free;quant:bf16,0.000000,0.000000,256000,,,yes,no
+nvidia/nemotron-4-340b-instruct,,Other;in:text;out:text,,,4096,,,no,no
+nvidia/nemotron-nano-12b-v2-vl,DeepInfra,"Other;reasoning;in:image,text,video;out:text;variant:standard;quant:fp8",0.200000,0.600000,131072,,,no,yes
+nvidia/nemotron-nano-12b-v2-vl,NVIDIA,"Other;reasoning;in:image,text,video;out:text;variant:free;quant:unknown",0.000000,0.000000,128000,,,yes,no
+nvidia/nemotron-nano-9b-v2,DeepInfra,Other;reasoning;in:text;out:text;variant:standard;quant:bf16,0.040000,0.160000,131072,,,yes,yes
+nvidia/nemotron-nano-9b-v2,NVIDIA,Other;reasoning;in:text;out:text;variant:free;quant:bf16,0.000000,0.000000,128000,,,yes,yes
+open-orca/mistral-7b-openorca,,Mistral;in:text;out:text,,,8192,,,no,no
+open-r1/olympiccoder-32b,,Other;reasoning;in:text;out:text,,,32768,,,no,no
+openai/chatgpt-4o-latest,OpenAI,"GPT;in:text,image;out:text;variant:standard;quant:unknown",5.000000,15.000000,128000,,,no,yes
+openai/codex-mini,,"GPT;reasoning;in:image,text;out:text",,,200000,,,no,no
+openai/gpt-3.5-turbo,OpenAI,GPT;in:text;out:text;variant:standard;quant:unknown,0.500000,1.500000,16385,,,yes,yes
+openai/gpt-3.5-turbo-0125,,GPT;in:text;out:text,,,16385,,,no,no
+openai/gpt-3.5-turbo-0301,,GPT;in:text;out:text,,,4095,,,no,no
+openai/gpt-3.5-turbo-0613,Azure,GPT;in:text;out:text;variant:standard;quant:unknown,1.000000,2.000000,4095,,,yes,yes
+openai/gpt-3.5-turbo-1106,,GPT;in:text;out:text,,,16385,,,no,no
+openai/gpt-3.5-turbo-16k,OpenAI,GPT;in:text;out:text;variant:standard;quant:unknown,3.000000,4.000000,16385,,,yes,yes
+openai/gpt-3.5-turbo-instruct,OpenAI,GPT;in:text;out:text;variant:standard;quant:unknown,1.500000,2.000000,4095,,,no,yes
+openai/gpt-4,OpenAI,GPT;in:text;out:text;variant:standard;quant:unknown,30.000000,60.000000,8191,,,yes,yes
+openai/gpt-4-0314,OpenAI,GPT;in:text;out:text;variant:standard;quant:unknown,30.000000,60.000000,8191,,,yes,yes
+openai/gpt-4-1106-preview,OpenAI,GPT;in:text;out:text;variant:standard;quant:unknown,10.000000,30.000000,128000,,,yes,yes
+openai/gpt-4-32k,,GPT;in:text;out:text,,,32767,,,no,no
+openai/gpt-4-32k-0314,,GPT;in:text;out:text,,,32767,,,no,no
+openai/gpt-4-turbo,OpenAI,"GPT;in:text,image;out:text;variant:standard;quant:unknown",10.000000,30.000000,128000,,,yes,yes
+openai/gpt-4-turbo-preview,OpenAI,GPT;in:text;out:text;variant:standard;quant:unknown,10.000000,30.000000,128000,,,yes,yes
+openai/gpt-4-vision-preview,,"GPT;in:text,image;out:text",,,128000,,,no,no
+openai/gpt-4.1,OpenAI,"GPT;in:image,text,file;out:text;variant:standard;quant:unknown",2.000000,8.000000,1047576,,,yes,yes
+openai/gpt-4.1-mini,OpenAI,"GPT;in:image,text,file;out:text;variant:standard;quant:unknown",0.400000,1.600000,1047576,,,yes,yes
+openai/gpt-4.1-nano,OpenAI,"GPT;in:image,text,file;out:text;variant:standard;quant:unknown",0.100000,0.400000,1047576,,,yes,yes
+openai/gpt-4.5-preview,,"GPT;in:text,image;out:text",,,128000,,,no,no
+openai/gpt-4o,OpenAI,"GPT;in:text,image,file;out:text;variant:extended;quant:unknown",6.000000,18.000000,128000,,,yes,yes
+openai/gpt-4o,OpenAI,"GPT;in:text,image,file;out:text;variant:standard;quant:unknown",2.500000,10.000000,128000,,,yes,yes
+openai/gpt-4o-2024-05-13,OpenAI,"GPT;in:text,image,file;out:text;variant:standard;quant:unknown",5.000000,15.000000,128000,,,yes,yes
+openai/gpt-4o-2024-08-06,Azure,"GPT;in:text,image,file;out:text;variant:standard;quant:unknown",2.500000,10.000000,128000,,,yes,yes
+openai/gpt-4o-2024-11-20,OpenAI,"GPT;in:text,image,file;out:text;variant:standard;quant:unknown",2.500000,10.000000,128000,,,yes,yes
+openai/gpt-4o-audio-preview,OpenAI,"GPT;in:audio,text;out:text,audio;variant:standard;quant:unknown",2.500000,10.000000,128000,,,yes,yes
+openai/gpt-4o-mini,OpenAI,"GPT;in:text,image,file;out:text;variant:standard;quant:unknown",0.150000,0.600000,128000,,,yes,yes
+openai/gpt-4o-mini-2024-07-18,OpenAI,"GPT;in:text,image,file;out:text;variant:standard;quant:unknown",0.150000,0.600000,128000,,,yes,yes
+openai/gpt-4o-mini-search-preview,OpenAI,GPT;in:text;out:text;variant:standard;quant:unknown,0.150000,0.600000,128000,,,no,yes
+openai/gpt-4o-search-preview,OpenAIAdapter,GPT;in:text;out:text;variant:standard;quant:unknown,2.500000,10.000000,128000,,,no,yes
+openai/gpt-5,OpenAI,"GPT;reasoning;in:text,image,file;out:text;variant:standard;quant:unknown",1.250000,10.000000,400000,,,yes,yes
+openai/gpt-5-chat,OpenAI,"GPT;in:file,image,text;out:text;variant:standard;quant:unknown",1.250000,10.000000,128000,,,no,yes
+openai/gpt-5-codex,OpenAI,"GPT;reasoning;in:text,image;out:text;variant:standard;quant:unknown",1.250000,10.000000,400000,,,yes,yes
+openai/gpt-5-image,OpenAI,"GPT;reasoning;in:image,text,file;out:image,text;variant:standard;quant:unknown",10.000000,10.000000,400000,,,yes,yes
+openai/gpt-5-image-mini,OpenAI,"GPT;reasoning;in:file,image,text;out:image,text;variant:standard;quant:unknown",2.500000,2.000000,400000,,,yes,yes
+openai/gpt-5-mini,OpenAI,"GPT;reasoning;in:text,image,file;out:text;variant:standard;quant:unknown",0.250000,2.000000,400000,,,yes,yes
+openai/gpt-5-nano,OpenAI,"GPT;reasoning;in:text,image,file;out:text;variant:standard;quant:unknown",0.050000,0.400000,400000,,,yes,yes
+openai/gpt-5-pro,OpenAI,"GPT;reasoning;in:image,text,file;out:text;variant:standard;quant:unknown",15.000000,120.000000,400000,,,yes,yes
+openai/gpt-5.1,OpenAI,"GPT;reasoning;in:image,text,file;out:text;variant:standard;quant:unknown",1.250000,10.000000,400000,,,yes,yes
+openai/gpt-5.1-chat,OpenAI,"GPT;in:file,image,text;out:text;variant:standard;quant:unknown",1.250000,10.000000,128000,,,yes,yes
+openai/gpt-5.1-codex,OpenAI,"GPT;reasoning;in:text,image;out:text;variant:standard;quant:unknown",1.250000,10.000000,400000,,,yes,yes
+openai/gpt-5.1-codex-max,OpenAI,"GPT;reasoning;in:text,image;out:text;variant:standard;quant:unknown",1.250000,10.000000,400000,,,yes,yes
+openai/gpt-5.1-codex-mini,OpenAI,"GPT;reasoning;in:image,text;out:text;variant:standard;quant:unknown",0.250000,2.000000,400000,,,yes,yes
+openai/gpt-5.2,OpenAI,"GPT;reasoning;in:file,image,text;out:text;variant:standard;quant:unknown",1.750000,14.000000,400000,,,yes,yes
+openai/gpt-5.2-chat,OpenAI,"GPT;in:file,image,text;out:text;variant:standard;quant:unknown",1.750000,14.000000,128000,,,yes,yes
+openai/gpt-5.2-codex,OpenAI,"GPT;reasoning;in:text,image;out:text;variant:standard;quant:unknown",1.750000,14.000000,400000,,,yes,yes
+openai/gpt-5.2-pro,OpenAI,"GPT;reasoning;in:image,text,file;out:text;variant:standard;quant:unknown",21.000000,168.000000,400000,,,yes,yes
+openai/gpt-audio,OpenAI,"GPT;in:text,audio;out:text,audio;variant:standard;quant:unknown",2.500000,10.000000,128000,,,no,yes
+openai/gpt-audio-mini,OpenAI,"GPT;in:text,audio;out:text,audio;variant:standard;quant:unknown",0.600000,2.400000,128000,,,no,yes
+openai/gpt-oss-120b,DeepInfra,GPT;reasoning;in:text;out:text;variant:exacto;quant:bf16,0.039000,0.190000,131072,,,yes,yes
+openai/gpt-oss-120b,DeepInfra,GPT;reasoning;in:text;out:text;variant:standard;quant:fp4,0.039000,0.190000,131072,,,yes,yes
+openai/gpt-oss-120b,OpenInference,GPT;reasoning;in:text;out:text;variant:free;quant:int8,0.000000,0.000000,131072,,,yes,no
+openai/gpt-oss-20b,DeepInfra,GPT;reasoning;in:text;out:text;variant:standard;quant:bf16,0.030000,0.140000,131072,,,yes,yes
+openai/gpt-oss-20b,OpenInference,GPT;reasoning;in:text;out:text;variant:free;quant:int8,0.000000,0.000000,131072,,,yes,no
+openai/gpt-oss-safeguard-20b,Groq,GPT;reasoning;in:text;out:text;variant:standard;quant:unknown,0.075000,0.300000,131072,,,yes,yes
+openai/o1,OpenAI,"GPT;in:text,image,file;out:text;variant:standard;quant:unknown",15.000000,60.000000,200000,,,yes,yes
+openai/o1-mini,,GPT;reasoning;in:text;out:text,,,128000,,,no,no
+openai/o1-mini-2024-09-12,,GPT;in:text;out:text,,,128000,,,no,no
+openai/o1-preview,,GPT;in:text;out:text,,,128000,,,no,no
+openai/o1-preview-2024-09-12,,GPT;in:text;out:text,,,128000,,,no,no
+openai/o1-pro,OpenAI,"GPT;reasoning;in:text,image,file;out:text;variant:standard;quant:unknown",150.000000,600.000000,200000,,,no,yes
+openai/o3,OpenAI,"GPT;reasoning;in:image,text,file;out:text;variant:standard;quant:unknown",2.000000,8.000000,200000,,,yes,yes
+openai/o3-deep-research,OpenAI,"GPT;reasoning;in:image,text,file;out:text;variant:standard;quant:unknown",10.000000,40.000000,200000,,,yes,yes
+openai/o3-mini,OpenAI,"GPT;in:text,file;out:text;variant:standard;quant:unknown",1.100000,4.400000,200000,,,yes,yes
+openai/o3-mini-high,OpenAI,"GPT;reasoning;in:text,file;out:text;variant:standard;quant:unknown",1.100000,4.400000,200000,,,yes,yes
+openai/o3-pro,OpenAI,"GPT;reasoning;in:text,file,image;out:text;variant:standard;quant:unknown",20.000000,80.000000,200000,,,yes,yes
+openai/o4-mini,OpenAI,"GPT;reasoning;in:image,text,file;out:text;variant:standard;quant:unknown",1.100000,4.400000,200000,,,yes,yes
+openai/o4-mini-deep-research,OpenAI,"GPT;reasoning;in:file,image,text;out:text;variant:standard;quant:unknown",2.000000,8.000000,200000,,,yes,yes
+openai/o4-mini-high,OpenAI,"GPT;reasoning;in:image,text,file;out:text;variant:standard;quant:unknown",1.100000,4.400000,200000,,,yes,yes
+openai/text-embedding-3-large,OpenAI,Other;in:text;out:embeddings;variant:standard;quant:unknown,0.130000,0.000000,8192,,,no,yes
+openai/text-embedding-3-small,OpenAI,Other;in:text;out:embeddings;variant:standard;quant:unknown,0.020000,0.000000,8192,,,no,yes
+openai/text-embedding-ada-002,OpenAI,Other;in:text;out:embeddings;variant:standard;quant:unknown,0.100000,0.000000,8192,,,no,yes
+openchat/openchat-7b,,Mistral;in:text;out:text,,,8192,,,no,no
+openchat/openchat-8b,,Llama3;in:text;out:text,,,8192,,,no,no
+opengvlab/internvl3-14b,,"Other;in:image,text;out:text",,,32000,,,no,no
+opengvlab/internvl3-2b,,"Other;in:image,text;out:text",,,32000,,,no,no
+opengvlab/internvl3-78b,Chutes,"Other;in:image,text;out:text;variant:standard;quant:bf16",0.150000,0.600000,32768,,,no,yes
+openrouter/andromeda-alpha,,"Other;reasoning;in:image,text;out:text",,,128000,,,no,no
+openrouter/aurora-alpha,Stealth,Other;reasoning;in:text;out:text;variant:standard;quant:unknown,0.000000,0.000000,128000,,,yes,yes
+openrouter/auto,,"Router;in:text,image,audio,file,video;out:text,image",,,2000000,,,no,no
+openrouter/bert-nebulon-alpha,,"Other;in:text,image;out:text",,,256000,,,no,no
+openrouter/bodybuilder,,Router;in:text;out:text,,,128000,,,no,no
+openrouter/cinematika-7b,,Mistral;in:text;out:text,,,8000,,,no,no
+openrouter/cypher-alpha,,Other;reasoning;in:text;out:text,,,1000000,,,no,no
+openrouter/free,,"Router;reasoning;in:text,image;out:text",,,200000,,,no,no
+openrouter/horizon-alpha,,"Other;in:image,text;out:text",,,256000,,,no,no
+openrouter/horizon-beta,,"Other;in:image,text;out:text",,,256000,,,no,no
+openrouter/optimus-alpha,,"Other;in:image,text;out:text",,,1000000,,,no,no
+openrouter/polaris-alpha,,"Other;in:text,image;out:text",,,256000,,,no,no
+openrouter/pony-alpha,Stealth,Other;reasoning;in:text;out:text;variant:standard;quant:unknown,0.000000,0.000000,200000,,,yes,yes
+openrouter/quasar-alpha,,"Other;in:image,text;out:text",,,1000000,,,no,no
+openrouter/sherlock-dash-alpha,,"Other;in:text,image;out:text",,,1840000,,,no,no
+openrouter/sherlock-think-alpha,,"Other;reasoning;in:text,image;out:text",,,1840000,,,no,no
+openrouter/sonoma-dusk-alpha,,"Other;in:text,image;out:text",,,2000000,,,no,no
+openrouter/sonoma-sky-alpha,,"Other;reasoning;in:text,image;out:text",,,2000000,,,no,no
+perplexity/llama-3-sonar-large-32k-chat,,Llama3;in:text;out:text,,,32768,,,no,no
+perplexity/llama-3-sonar-large-32k-online,,Llama3;in:text;out:text,,,28000,,,no,no
+perplexity/llama-3-sonar-small-32k-chat,,Llama3;in:text;out:text,,,32768,,,no,no
+perplexity/llama-3-sonar-small-32k-online,,Llama3;in:text;out:text,,,28000,,,no,no
+perplexity/llama-3.1-sonar-large-128k-online,,Llama3;in:text;out:text,,,127072,,,no,no
+perplexity/llama-3.1-sonar-small-128k-online,,Llama3;in:text;out:text,,,127072,,,no,no
+perplexity/r1-1776,,DeepSeek;reasoning;in:text;out:text,,,128000,,,no,no
+perplexity/sonar,Perplexity,"Other;in:text,image;out:text;variant:standard;quant:unknown",1.000000,1.000000,127072,,,no,no
+perplexity/sonar-deep-research,Perplexity,Other;reasoning;in:text;out:text;variant:standard;quant:unknown,2.000000,8.000000,128000,,,no,no
+perplexity/sonar-pro,Perplexity,"Other;in:text,image;out:text;variant:standard;quant:unknown",3.000000,15.000000,200000,,,no,no
+perplexity/sonar-pro-search,Perplexity,"Other;reasoning;in:text,image;out:text;variant:standard;quant:unknown",3.000000,15.000000,200000,,,no,yes
+perplexity/sonar-reasoning,,Other;reasoning;in:text;out:text,,,127000,,,no,no
+perplexity/sonar-reasoning-pro,Perplexity,"Other;reasoning;in:text,image;out:text;variant:standard;quant:unknown",2.000000,8.000000,128000,,,no,no
+phind/phind-codellama-34b,,Llama2;in:text;out:text,,,4096,,,no,no
+prime-intellect/intellect-3,Nebius Token Factory,Other;reasoning;in:text;out:text;variant:standard;quant:fp8,0.200000,1.100000,131072,,,yes,yes
+pygmalionai/mythalion-13b,,Llama2;in:text;out:text,,,8192,,,no,no
+qwen/qwen-110b-chat,,Qwen;in:text;out:text,,,32768,,,no,no
+qwen/qwen-14b-chat,,Qwen;in:text;out:text,,,32768,,,no,no
+qwen/qwen-2-72b-instruct,,Qwen;in:text;out:text,,,32768,,,no,no
+qwen/qwen-2-7b-instruct,,Qwen;in:text;out:text,,,32768,,,no,no
+qwen/qwen-2.5-72b-instruct,DeepInfra,Qwen;in:text;out:text;variant:standard;quant:fp8,0.120000,0.390000,32768,,,yes,yes
+qwen/qwen-2.5-7b-instruct,Phala,Qwen;in:text;out:text;variant:standard;quant:unknown,0.040000,0.100000,32768,,,no,no
+qwen/qwen-2.5-coder-32b-instruct,Chutes,Qwen;in:text;out:text;variant:standard;quant:fp8,0.030000,0.110000,32768,,,no,yes
+qwen/qwen-2.5-vl-7b-instruct,Hyperbolic,"Qwen;in:text,image;out:text;variant:standard;quant:bf16",0.200000,0.200000,32768,,,no,no
+qwen/qwen-32b-chat,,Qwen;in:text;out:text,,,32768,,,no,no
+qwen/qwen-4b-chat,,Qwen;in:text;out:text,,,32768,,,no,no
+qwen/qwen-72b-chat,,Qwen;in:text;out:text,,,32768,,,no,no
+qwen/qwen-7b-chat,,Qwen;in:text;out:text,,,32768,,,no,no
+qwen/qwen-max,Alibaba Cloud Int.,Qwen;in:text;out:text;variant:standard;quant:unknown,1.600000,6.400000,32768,,,yes,yes
+qwen/qwen-plus,Alibaba Cloud Int.,Qwen;in:text;out:text;variant:standard;quant:unknown,0.400000,1.200000,1000000,,,yes,yes
+qwen/qwen-plus-2025-07-28,Alibaba Cloud Int.,Qwen3;reasoning;in:text;out:text;variant:standard;quant:unknown,0.400000,1.200000,1000000,,,yes,yes
+qwen/qwen-plus-2025-07-28,Alibaba Cloud Int.,Qwen3;reasoning;in:text;out:text;variant:thinking;quant:unknown,0.400000,1.200000,1000000,,,yes,yes
+qwen/qwen-turbo,Alibaba Cloud Int.,Qwen;in:text;out:text;variant:standard;quant:unknown,0.050000,0.200000,131072,,,yes,yes
+qwen/qwen-vl-max,Alibaba Cloud Int.,"Qwen;in:text,image;out:text;variant:standard;quant:unknown",0.800000,3.200000,131072,,,yes,yes
+qwen/qwen-vl-plus,Alibaba Cloud Int.,"Qwen;in:text,image;out:text;variant:standard;quant:unknown",0.210000,0.630000,131072,,,no,yes
+qwen/qwen2.5-32b-instruct,,Qwen;in:text;out:text,,,131072,,,no,no
+qwen/qwen2.5-coder-7b-instruct,Nebius AI Studio (Fast),Qwen;in:text;out:text;variant:standard;quant:fp8,0.030000,0.090000,32768,,,no,yes
+qwen/qwen2.5-vl-32b-instruct,Chutes,"Qwen;in:text,image;out:text;variant:standard;quant:bf16",0.050000,0.220000,16384,,,no,yes
+qwen/qwen2.5-vl-3b-instruct,,"Qwen;in:text,image;out:text",,,64000,,,no,no
+qwen/qwen2.5-vl-72b-instruct,Chutes,"Qwen;in:text,image;out:text;variant:standard;quant:bf16",0.150000,0.600000,32768,,,no,yes
+qwen/qwen3-0.6b-04-28,,Qwen3;reasoning;in:text;out:text,,,32000,,,no,no
+qwen/qwen3-1.7b,,Qwen3;reasoning;in:text;out:text,,,32000,,,no,no
+qwen/qwen3-14b,Chutes,Qwen3;reasoning;in:text;out:text;variant:standard;quant:bf16,0.050000,0.220000,40960,,,yes,yes
+qwen/qwen3-235b-a22b,Fireworks,Qwen3;reasoning;in:text;out:text;variant:standard;quant:unknown,0.220000,0.880000,131072,,,yes,yes
+qwen/qwen3-235b-a22b-2507,DeepInfra,Qwen3;in:text;out:text;variant:standard;quant:fp8,0.071000,0.100000,262144,,,yes,yes
+qwen/qwen3-235b-a22b-thinking-2507,Chutes,Qwen3;reasoning;in:text;out:text;variant:standard;quant:bf16,0.110000,0.600000,262144,,,yes,yes
+qwen/qwen3-30b-a3b,Chutes,Qwen3;reasoning;in:text;out:text;variant:standard;quant:bf16,0.060000,0.220000,40960,,,yes,yes
+qwen/qwen3-30b-a3b-instruct-2507,Chutes,Qwen3;in:text;out:text;variant:standard;quant:bf16,0.080000,0.330000,262144,,,yes,yes
+qwen/qwen3-30b-a3b-thinking-2507,Cloudflare,Qwen3;reasoning;in:text;out:text;variant:standard;quant:unknown,0.051000,0.340000,32768,,,no,no
+qwen/qwen3-32b,Chutes,Qwen3;reasoning;in:text;out:text;variant:standard;quant:bf16,0.080000,0.240000,40960,,,yes,yes
+qwen/qwen3-4b,Venice,Qwen3;reasoning;in:text;out:text;variant:free;quant:fp8,0.000000,0.000000,40960,,,yes,yes
+qwen/qwen3-8b,AtlasCloud,Qwen3;reasoning;in:text;out:text;variant:standard;quant:fp8,0.050000,0.400000,32000,,,yes,yes
+qwen/qwen3-coder,DeepInfra (Turbo),Qwen3;in:text;out:text;variant:standard;quant:fp4,0.220000,1.000000,262144,,,yes,yes
+qwen/qwen3-coder,Google Vertex,Qwen3;in:text;out:text;variant:exacto;quant:unknown,0.220000,1.800000,262144,,,yes,yes
+qwen/qwen3-coder,Venice (Beta),Qwen3;in:text;out:text;variant:free;quant:fp8,0.000000,0.000000,262000,,,yes,no
+qwen/qwen3-coder-30b-a3b-instruct,NovitaAI,Qwen3;in:text;out:text;variant:standard;quant:fp8,0.070000,0.270000,160000,,,yes,yes
+qwen/qwen3-coder-flash,Alibaba Cloud Int.,Qwen3;in:text;out:text;variant:standard;quant:unknown,0.300000,1.500000,1000000,,,yes,yes
+qwen/qwen3-coder-next,Chutes,Qwen;in:text;out:text;variant:standard;quant:bf16,0.070000,0.300000,262144,,,yes,yes
+qwen/qwen3-coder-plus,Alibaba Cloud Int.,Qwen3;reasoning;in:text;out:text;variant:standard;quant:unknown,1.000000,5.000000,1000000,,,yes,yes
+qwen/qwen3-embedding-0.6b,,Other;in:text;out:embeddings,,,8192,,,no,no
+qwen/qwen3-embedding-4b,DeepInfra,Other;in:text;out:embeddings;variant:standard;quant:unknown,0.020000,0.000000,32768,,,no,yes
+qwen/qwen3-embedding-8b,Nebius Token Factory,Other;in:text;out:embeddings;variant:standard;quant:unknown,0.010000,0.000000,32000,,,no,no
+qwen/qwen3-max,Alibaba Cloud Int.,Qwen3;reasoning;in:text;out:text;variant:standard;quant:unknown,1.200000,6.000000,262144,,,yes,yes
+qwen/qwen3-max-thinking,Alibaba Cloud Int.,Qwen;reasoning;in:text;out:text;variant:standard;quant:unknown,1.200000,6.000000,262144,,,yes,yes
+qwen/qwen3-next-80b-a3b-instruct,DeepInfra,Qwen3;in:text;out:text;variant:standard;quant:fp8,0.090000,1.100000,262144,,,yes,yes
+qwen/qwen3-next-80b-a3b-instruct,Venice (Beta),Qwen3;in:text;out:text;variant:free;quant:fp16,0.000000,0.000000,262144,,,yes,yes
+qwen/qwen3-next-80b-a3b-thinking,Nebius Token Factory,Qwen3;reasoning;in:text;out:text;variant:standard;quant:fp8,0.150000,1.200000,128000,,,yes,yes
+qwen/qwen3-vl-235b-a22b-instruct,DeepInfra,"Qwen3;in:text,image;out:text;variant:standard;quant:fp8",0.200000,0.880000,262144,,,no,yes
+qwen/qwen3-vl-235b-a22b-thinking,SiliconFlow,"Qwen3;reasoning;in:text,image;out:text;variant:standard;quant:fp8",0.450000,3.500000,262144,,,yes,yes
+qwen/qwen3-vl-30b-a3b-instruct,Fireworks,"Qwen3;in:text,image;out:text;variant:standard;quant:unknown",0.150000,0.600000,262144,,,yes,yes
+qwen/qwen3-vl-30b-a3b-thinking,NovitaAI,"Qwen3;reasoning;in:text,image;out:text;variant:standard;quant:fp16",0.200000,1.000000,131072,,,yes,yes
+qwen/qwen3-vl-32b-instruct,Together,"Qwen;in:text,image;out:text;variant:standard;quant:unknown",0.500000,1.500000,262144,,,no,yes
+qwen/qwen3-vl-8b-instruct,NovitaAI,"Qwen3;in:image,text;out:text;variant:standard;quant:fp8",0.080000,0.500000,131072,,,yes,yes
+qwen/qwen3-vl-8b-thinking,Alibaba Cloud Int.,"Qwen3;reasoning;in:image,text;out:text;variant:standard;quant:unknown",0.180000,2.100000,131072,,,yes,yes
+qwen/qwq-32b,NextBit,Qwen;reasoning;in:text;out:text;variant:standard;quant:int4,0.150000,0.400000,32768,,,no,yes
+qwen/qwq-32b-preview,,Qwen;reasoning;in:text;out:text,,,32768,,,no,no
+raifle/sorcererlm-8x22b,Infermatic,Mistral;in:text;out:text;variant:standard;quant:unknown,4.500000,4.500000,16000,,,no,no
+recursal/eagle-7b,,RWKV;in:text;out:text,,,10000,,,no,no
+recursal/rwkv-5-3b-ai-town,,RWKV;in:text;out:text,,,10000,,,no,no
+rekaai/reka-flash-3,,Other;reasoning;in:text;out:text,,,32000,,,no,no
+relace/relace-apply-3,Relace,Other;in:text;out:text;variant:standard;quant:fp8,0.850000,1.250000,256000,,,no,no
+relace/relace-search,Relace,Other;in:text;out:text;variant:standard;quant:bf16,1.000000,3.000000,256000,,,yes,no
+rwkv/rwkv-5-world-3b,,RWKV;in:text;out:text,,,10000,,,no,no
+sao10k/fimbulvetr-11b-v2,,Llama2;in:text;out:text,,,8192,,,no,no
+sao10k/l3-euryale-70b,NovitaAI,Llama3;in:text;out:text;variant:standard;quant:bf16,1.480000,1.480000,8192,,,yes,no
+sao10k/l3-lunaris-8b,DeepInfra (Turbo),Llama3;in:text;out:text;variant:standard;quant:fp8,0.040000,0.050000,8192,,,no,yes
+sao10k/l3-stheno-8b,,Llama3;in:text;out:text,,,32000,,,no,no
+sao10k/l3.1-70b-hanami-x1,Infermatic,Llama3;in:text;out:text;variant:standard;quant:bf16,3.000000,3.000000,16000,,,no,no
+sao10k/l3.1-euryale-70b,NextBit,Llama3;in:text;out:text;variant:standard;quant:fp8,0.650000,0.750000,32768,,,no,yes
+sao10k/l3.3-euryale-70b,NextBit,Llama3;in:text;out:text;variant:standard;quant:bf16,0.650000,0.750000,131072,,,no,yes
+sarvamai/sarvam-m,,Other;in:text;out:text,,,32768,,,no,no
+scb10x/llama3.1-typhoon2-70b-instruct,,Llama3;in:text;out:text,,,8192,,,no,no
+scb10x/llama3.1-typhoon2-8b-instruct,,Llama3;in:text;out:text,,,8192,,,no,no
+sentence-transformers/all-minilm-l12-v2,DeepInfra,Other;in:text;out:embeddings;variant:standard;quant:unknown,0.005000,0.000000,512,,,no,yes
+sentence-transformers/all-minilm-l6-v2,DeepInfra,Other;in:text;out:embeddings;variant:standard;quant:unknown,0.005000,0.000000,512,,,no,yes
+sentence-transformers/all-mpnet-base-v2,DeepInfra,Other;in:text;out:embeddings;variant:standard;quant:unknown,0.005000,0.000000,512,,,no,yes
+sentence-transformers/multi-qa-mpnet-base-dot-v1,DeepInfra,Other;in:text;out:embeddings;variant:standard;quant:unknown,0.005000,0.000000,512,,,no,yes
+sentence-transformers/paraphrase-minilm-l6-v2,DeepInfra,Other;in:text;out:embeddings;variant:standard;quant:unknown,0.005000,0.000000,512,,,no,yes
+sentientagi/dobby-mini-unhinged-plus-llama-3.1-8b,,Other;in:text;out:text,,,131072,,,no,no
+snowflake/snowflake-arctic-instruct,,Llama2;in:text;out:text,,,4096,,,no,no
+sophosympatheia/midnight-rose-70b,,Llama2;in:text;out:text,,,4096,,,no,no
+sourceful/riverflow-v2-fast,Sourceful,"Other;in:text,image;out:image;variant:standard;quant:unknown",0.000000,0.000000,8192,,,no,no
+sourceful/riverflow-v2-fast-preview,Sourceful,"Other;in:text,image;out:image;variant:standard;quant:unknown",0.000000,0.000000,8192,,,no,no
+sourceful/riverflow-v2-max-preview,Sourceful,"Other;in:text,image;out:image;variant:standard;quant:unknown",0.000000,0.000000,8192,,,no,no
+sourceful/riverflow-v2-pro,Sourceful,"Other;in:text,image;out:image;variant:standard;quant:unknown",0.000000,0.000000,8192,,,no,no
+sourceful/riverflow-v2-standard-preview,Sourceful,"Other;in:text,image;out:image;variant:standard;quant:unknown",0.000000,0.000000,8192,,,no,no
+steelskull/l3.3-electra-r1-70b,,Other;reasoning;in:text;out:text,,,128000,,,no,no
+stepfun-ai/step3,,"Other;reasoning;in:image,text;out:text",,,65536,,,no,no
+stepfun/step-3.5-flash,StepFun,Other;reasoning;in:text;out:text;variant:free;quant:fp8,0.000000,0.000000,256000,,,yes,no
+switchpoint/router,Switchpoint,Other;reasoning;in:text;out:text;variant:standard;quant:unknown,0.850000,3.400000,131072,,,no,no
+teknium/openhermes-2-mistral-7b,,Mistral;in:text;out:text,,,8192,,,no,no
+teknium/openhermes-2.5-mistral-7b,,Mistral;in:text;out:text,,,4096,,,no,no
+tencent/hunyuan-a13b-instruct,SiliconFlow,Other;reasoning;in:text;out:text;variant:standard;quant:fp8,0.140000,0.570000,131072,,,no,yes
+thedrummer/cydonia-24b-v4.1,Parasail,Other;in:text;out:text;variant:standard;quant:bf16,0.300000,0.500000,131072,,,no,no
+thedrummer/rocinante-12b,NextBit,Qwen;in:text;out:text;variant:standard;quant:bf16,0.170000,0.430000,32768,,,yes,yes
+thedrummer/skyfall-36b-v2,Parasail,Other;in:text;out:text;variant:standard;quant:fp8,0.550000,0.800000,32768,,,no,no
+thedrummer/unslopnemo-12b,NextBit,Mistral;in:text;out:text;variant:standard;quant:fp8,0.400000,0.400000,32768,,,yes,yes
+thedrummer/valkyrie-49b-v1,,Other;reasoning;in:text;out:text,,,131072,,,no,no
+thenlper/gte-base,DeepInfra,Other;in:text;out:embeddings;variant:standard;quant:unknown,0.005000,0.000000,512,,,no,yes
+thenlper/gte-large,DeepInfra,Other;in:text;out:embeddings;variant:standard;quant:unknown,0.010000,0.000000,512,,,no,yes
+thudm/glm-4-32b,,Other;in:text;out:text,,,32768,,,no,no
+thudm/glm-4-9b,,Other;in:text;out:text,,,32000,,,no,no
+thudm/glm-4.1v-9b-thinking,,"Other;reasoning;in:image,text;out:text",,,65536,,,no,no
+thudm/glm-z1-32b,,Other;reasoning;in:text;out:text,,,32768,,,no,no
+thudm/glm-z1-9b,,Other;reasoning;in:text;out:text,,,32000,,,no,no
+thudm/glm-z1-rumination-32b,,Other;reasoning;in:text;out:text,,,32000,,,no,no
+tngtech/deepseek-r1t-chimera,Chutes,DeepSeek;reasoning;in:text;out:text;variant:free;quant:unknown,0.000000,0.000000,163840,,,no,no
+tngtech/deepseek-r1t-chimera,Chutes,DeepSeek;reasoning;in:text;out:text;variant:standard;quant:fp8,0.300000,1.200000,163840,,,no,yes
+tngtech/deepseek-r1t2-chimera,Chutes,DeepSeek;reasoning;in:text;out:text;variant:free;quant:unknown,0.000000,0.000000,163840,,,no,no
+tngtech/deepseek-r1t2-chimera,Chutes,DeepSeek;reasoning;in:text;out:text;variant:standard;quant:fp8,0.250000,0.850000,163840,,,yes,yes
+tngtech/tng-r1t-chimera,Chutes,Other;reasoning;in:text;out:text;variant:free;quant:fp8,0.000000,0.000000,163840,,,yes,yes
+tngtech/tng-r1t-chimera,Chutes,Other;reasoning;in:text;out:text;variant:standard;quant:fp8,0.250000,0.850000,163840,,,yes,yes
+togethercomputer/stripedhyena-hessian-7b,,Mistral;in:text;out:text,,,32768,,,no,no
+togethercomputer/stripedhyena-nous-7b,,Mistral;in:text;out:text,,,32768,,,no,no
+tokyotech-llm/llama-3.1-swallow-8b-instruct-v0.3,,Llama3;in:text;out:text,,,16384,,,no,no
+undi95/remm-slerp-l2-13b,NextBit,Llama2;in:text;out:text;variant:standard;quant:bf16,0.450000,0.650000,6144,,,no,yes
+undi95/toppy-m-7b,,Mistral;in:text;out:text,,,4096,,,no,no
+upstage/solar-pro-3,Upstage,Other;reasoning;in:text;out:text;variant:free;quant:unknown,0.000000,0.000000,128000,,,yes,yes
+writer/palmyra-x5,Amazon Bedrock,Other;in:text;out:text;variant:standard;quant:unknown,0.600000,6.000000,1040000,,,no,no
+x-ai/grok-2,,Grok;in:text;out:text,,,32768,,,no,no
+x-ai/grok-2-1212,,Grok;in:text;out:text,,,131072,,,no,no
+x-ai/grok-2-mini,,Grok;in:text;out:text,,,32768,,,no,no
+x-ai/grok-2-vision-1212,,"Grok;in:text,image;out:text",,,32768,,,no,no
+x-ai/grok-3,xAI,Grok;in:text;out:text;variant:standard;quant:unknown,3.000000,15.000000,131072,,,yes,yes
+x-ai/grok-3-beta,xAI,Grok;in:text;out:text;variant:standard;quant:unknown,3.000000,15.000000,131072,,,yes,yes
+x-ai/grok-3-mini,xAI,Grok;reasoning;in:text;out:text;variant:standard;quant:unknown,0.300000,0.500000,131072,,,yes,yes
+x-ai/grok-3-mini-beta,xAI,Grok;reasoning;in:text;out:text;variant:standard;quant:unknown,0.300000,0.500000,131072,,,yes,yes
+x-ai/grok-4,xAI,"Grok;reasoning;in:image,text;out:text;variant:standard;quant:unknown",3.000000,15.000000,256000,,,yes,yes
+x-ai/grok-4-fast,xAI,"Grok;reasoning;in:text,image;out:text;variant:standard;quant:unknown",0.200000,0.500000,2000000,,,yes,yes
+x-ai/grok-4.1-fast,xAI,"Grok;reasoning;in:text,image;out:text;variant:standard;quant:unknown",0.200000,0.500000,2000000,,,yes,yes
+x-ai/grok-beta,,Grok;in:text;out:text,,,131072,,,no,no
+x-ai/grok-code-fast-1,xAI,Grok;reasoning;in:text;out:text;variant:standard;quant:unknown,0.200000,1.500000,256000,,,yes,yes
+x-ai/grok-vision-beta,,"Grok;in:text,image;out:text",,,8192,,,no,no
+xiaomi/mimo-v2-flash,Chutes,Other;reasoning;in:text;out:text;variant:standard;quant:unknown,0.090000,0.290000,262144,,,yes,yes
+xwin-lm/xwin-lm-70b,,Llama2;in:text;out:text,,,8192,,,no,no
+z-ai/glm-4-32b,Z.ai,Other;in:text;out:text;variant:standard;quant:unknown,0.100000,0.100000,128000,,,yes,no
+z-ai/glm-4.5,Chutes,Other;reasoning;in:text;out:text;variant:standard;quant:bf16,0.350000,1.550000,131072,,,yes,yes
+z-ai/glm-4.5-air,NovitaAI,Other;reasoning;in:text;out:text;variant:standard;quant:bf16,0.130000,0.850000,131072,,,yes,no
+z-ai/glm-4.5-air,Z.ai,Other;reasoning;in:text;out:text;variant:free;quant:unknown,0.000000,0.000000,131072,,,yes,no
+z-ai/glm-4.5v,NovitaAI,"Other;reasoning;in:text,image;out:text;variant:standard;quant:fp8",0.600000,1.800000,65536,,,yes,yes
+z-ai/glm-4.6,Chutes,Other;reasoning;in:text;out:text;variant:standard;quant:bf16,0.350000,1.500000,202752,,,yes,yes
+z-ai/glm-4.6,NovitaAI,Other;reasoning;in:text;out:text;variant:exacto;quant:bf16,0.440000,1.760000,204800,,,yes,yes
+z-ai/glm-4.6v,SiliconFlow,"Other;reasoning;in:image,text,video;out:text;variant:standard;quant:fp8",0.300000,0.900000,131072,,,yes,no
+z-ai/glm-4.7,Chutes,Other;reasoning;in:text;out:text;variant:standard;quant:bf16,0.400000,1.500000,202752,,,yes,yes
+z-ai/glm-4.7-flash,DeepInfra,Other;reasoning;in:text;out:text;variant:standard;quant:bf16,0.060000,0.400000,202752,,,yes,yes

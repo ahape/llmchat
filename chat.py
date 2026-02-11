@@ -41,14 +41,14 @@ console = Console()
 
 @dataclass
 class RouterConfig:
-  key: str              # "hf", "google"
-  name: str             # "HuggingFace", "Google AI"
+  key: str              # "hf", "google", "claude", "openrouter"
+  name: str             # "HuggingFace", "Google AI", "Anthropic Claude", "OpenRouter"
   base_url: str
   api_key_env: str      # env var name for API key
   api_key_file: str     # fallback file for API key
   csv_path: str         # relative path to models CSV
   default_model: str    # fallback default model
-  model_id_format: str  # "name:provider" (HF) or "name" (Google)
+  model_id_format: str  # "name:provider" (HF) or "name" (Google/Claude/OpenRouter)
 
 ROUTERS: Dict[str, RouterConfig] = {
   "hf": RouterConfig(
@@ -73,6 +73,14 @@ ROUTERS: Dict[str, RouterConfig] = {
     api_key_env="ANTHROPIC_API_KEY", api_key_file=".ANTHROPIC_API_KEY",
     csv_path="routers/claude/models.csv",
     default_model="claude-sonnet-4-5",
+    model_id_format="name",
+  ),
+  "openrouter": RouterConfig(
+    key="openrouter", name="OpenRouter",
+    base_url="https://openrouter.ai/api/v1",
+    api_key_env="OPENROUTER_API_KEY", api_key_file=".OPENROUTER_API_KEY",
+    csv_path="routers/openrouter/models.csv",
+    default_model="anthropic/claude-3.5-sonnet",
     model_id_format="name",
   ),
 }
