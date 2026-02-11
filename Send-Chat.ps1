@@ -1,3 +1,18 @@
+<#
+.SYNOPSIS
+  Wrapper for chat.py - Query LLMs via OpenAI-compatible API routers
+
+.EXAMPLES
+  Send-Chat "why is the sky blue?"
+  Send-Chat "explain quantum computing" -Model "deepseek-ai/DeepSeek-V3.2"
+  Send-Chat -ListModels
+  Send-Chat -SwitchModel
+  Send-Chat -SwitchRouter
+  Send-Chat "continue our conversation" -Context
+  Send-Chat "start fresh" -Context new
+  Send-Chat -Compose
+  Send-Chat -Compose -Model "deepseek-ai/DeepSeek-V3.2"
+#>
 [CmdletBinding()]
 param(
   [Parameter(Position=0, ValueFromPipeline=$true, HelpMessage="The question to ask the LLM")]
@@ -22,13 +37,7 @@ param(
   [string]$Context
 )
 
-
-# Get true source directory (follows symlink target)
-$sourceRoot = if ($PSCommandPath -and (Get-Item $PSCommandPath).LinkType) {
-    (Get-Item $PSCommandPath).Target | Split-Path -Parent
-} else {
-    $PSScriptRoot
-}
+$sourceRoot = "C:\Users\AlanHape\source\repos\huggingchat\" # Change this when copying to other directories
 $pythonExe = Join-Path $sourceRoot ".venv/Scripts/python.exe"
 $pythonArgs = @(Join-Path $sourceRoot 'chat.py')
 
@@ -58,19 +67,3 @@ if ($Context) {
 }
 
 & $pythonExe @pythonArgs
-
-<#
-.SYNOPSIS
-  Wrapper for chat.py - Query LLMs via OpenAI-compatible API routers
-
-.EXAMPLES
-  Send-Chat "why is the sky blue?"
-  Send-Chat "explain quantum computing" -Model "deepseek-ai/DeepSeek-V3.2"
-  Send-Chat -ListModels
-  Send-Chat -SwitchModel
-  Send-Chat -SwitchRouter
-  Send-Chat "continue our conversation" -Context
-  Send-Chat "start fresh" -Context new
-  Send-Chat -Compose
-  Send-Chat -Compose -Model "deepseek-ai/DeepSeek-V3.2"
-#>
