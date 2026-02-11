@@ -503,34 +503,40 @@ class App:
     last_token_time = start_time
 
     # 6. Render Response
-    with Live(console=console, refresh_per_second=10) as live:
-      # Show waiting status until first token
-      live.update("[dim italic]Waiting for response...[/dim italic]")
+    try:
+      with Live(console=console, refresh_per_second=10) as live:
+        # Show waiting status until first token
+        live.update("[dim italic]Waiting for response...[/dim italic]")
 
-      for chunk in response_stream:
-        current_time = time.time()
+        for chunk in response_stream:
+          current_time = time.time()
 
-        if chunk.choices and chunk.choices[0].delta.content:
-          content = chunk.choices[0].delta.content
-          full_response += content
-          token_count += 1
-          last_token_time = current_time
+          if chunk.choices and chunk.choices[0].delta.content:
+            content = chunk.choices[0].delta.content
+            full_response += content
+            token_count += 1
+            last_token_time = current_time
 
-          # Mark first token received
-          if not first_token_received:
-            first_token_received = True
-            time_to_first_token = current_time - start_time
-            console.print(f"[dim]First token received in {time_to_first_token:.2f}s[/dim]\n")
+            # Mark first token received
+            if not first_token_received:
+              first_token_received = True
+              time_to_first_token = current_time - start_time
+              console.print(f"[dim]First token received in {time_to_first_token:.2f}s[/dim]\n")
 
-          # Update with response content
-          live.update(Markdown(full_response))
+            # Update with response content
+            live.update(Markdown(full_response))
 
-        # Detect potential hang (no tokens for 30+ seconds after first token)
-        if first_token_received and (current_time - last_token_time) > 30:
-          live.update(Markdown(full_response + "\n\n[yellow italic]⚠ No tokens received for 30s, stream may be stalled...[/yellow italic]"))
+          # Detect potential hang (no tokens for 30+ seconds after first token)
+          if first_token_received and (current_time - last_token_time) > 30:
+            live.update(Markdown(full_response + "\n\n[yellow italic]⚠ No tokens received for 30s, stream may be stalled...[/yellow italic]"))
 
-        if chunk.usage:
-          usage = chunk.usage
+          if chunk.usage:
+            usage = chunk.usage
+    except KeyboardInterrupt:
+      console.print("\n\n[yellow]Response cancelled by user (CTRL+C)[/yellow]")
+      if full_response:
+        console.print(f"[dim]Partial response received ({len(full_response)} characters)[/dim]")
+      return
 
     # Calculate final timing stats
     end_time = time.time()
