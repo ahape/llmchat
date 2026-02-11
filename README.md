@@ -1,42 +1,20 @@
 # Setup
 
-Step 1: Set the environment variable `HF_TOKEN` to the access token to use inference stuff
+Step 1: Set the API key for your chosen router as an env var or dotfile:
 
-(Unix/macOS)
+- **Google AI**: `GOOGLE_API_KEY` env var or `.GOOGLE_API_KEY` file
+- **Anthropic Claude**: `ANTHROPIC_API_KEY` env var or `.ANTHROPIC_API_KEY` file
+- **OpenRouter**: `OPENROUTER_API_KEY` env var or `.OPENROUTER_API_KEY` file
 
-```sh
-echo 'export HF_TOKEN="token_value"' >> ~/.zshrc
-# then open a new shell
-```
-
-(Windows)
-
-```ps1
-setx HF_TOKEN "token_value"
-# then open a new shell
-```
-
-Step 2: Create the virtual environment
+Step 2: Create and activate the virtual environment
 
 ```sh
 python3 -m venv .venv
+source .venv/bin/activate   # Unix/macOS
+# .venv\Scripts\activate    # Windows
 ```
 
-Step 3: Activate the virtual environment
-
-(Windows)
-
-```ps1
-.venv\Scripts\activate
-```
-
-(Unix/macOS)
-
-```sh
-source .venv/bin/activate
-```
-
-Step 4: Install the packages
+Step 3: Install the packages
 
 ```sh
 pip install -r requirements.txt
@@ -45,12 +23,11 @@ pip install -r requirements.txt
 # Usage
 
 ```sh
-python3 chat.py --question "What is the capital of South Sudan?" --model "deepseek-ai/DeepSeek-V3.2"
-# if --model is omitted, default is deepseek
-python3 chat.py --question "What is the capital of South Sudan?"
-# other variations
 python3 chat.py "What is the capital of South Sudan?"
-python3 chat.py "What is the capital of South Sudan?" --model "deepseek-ai/DeepSeek-V3.2"
+python3 chat.py "What is the capital of South Sudan?" --model "gemini-2.0-flash"
+python3 chat.py --switch-router     # interactively change API router
+python3 chat.py --switch-model      # interactively change default model
+python3 chat.py --list-models       # show available models
 ```
 
 # Other stuff

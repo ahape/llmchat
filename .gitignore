@@ -2,6 +2,5 @@ __pycache__/
 .HF_TOKEN
 .GOOGLE_API_KEY
 .ANTHROPIC_API_KEY
-.hf_config.json
 .llm_config.json
 .OPENROUTER_API_KEY

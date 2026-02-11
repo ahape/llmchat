@@ -85,7 +85,7 @@ def parse_arguments():
     "-l",
     "-lm",
     action="store_true",
-    help="List available models that are compatible with Huggle Face router/providers, then exit"
+    help="List available models for the active router, then exit"
   )
 
   group.add_argument(
@@ -100,7 +100,7 @@ def parse_arguments():
     "--switch-router",
     "-sr",
     action="store_true",
-    help="Interactively switch the active API router (e.g., HuggingFace, Google), then exit"
+    help="Interactively switch the active API router, then exit"
   )
 
   # Optional arguments (only valid when not using --list-models)
@@ -115,7 +115,7 @@ def parse_arguments():
     "--model",
     "-m",
     type=str,
-    help="Model to use for processing (default: env['HF_MODEL'])"
+    help="Model to use for processing"
   )
 
   parser.add_argument(
@@ -157,31 +157,21 @@ def parse_arguments():
 
 @dataclass
 class RouterConfig:
-  key: str              # "hf", "google", "claude", "openrouter"
-  name: str             # "HuggingFace", "Google AI", "Anthropic Claude", "OpenRouter"
+  key: str              # "google", "claude", "openrouter"
+  name: str             # "Google AI", "Anthropic Claude", "OpenRouter"
   base_url: str
   api_key_env: str      # env var name for API key
   api_key_file: str     # fallback file for API key
   csv_path: str         # relative path to models CSV
   default_model: str    # fallback default model
-  model_id_format: str  # "name:provider" (HF) or "name" (Google/Claude/OpenRouter)
 
 ROUTERS: Dict[str, RouterConfig] = {
-  "hf": RouterConfig(
-    key="hf", name="HuggingFace",
-    base_url="https://router.huggingface.co/v1",
-    api_key_env="HF_TOKEN", api_key_file=".HF_TOKEN",
-    csv_path="routers/hf/models.csv",
-    default_model="Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8",
-    model_id_format="name:provider",
-  ),
   "google": RouterConfig(
     key="google", name="Google AI",
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
     api_key_env="GOOGLE_API_KEY", api_key_file=".GOOGLE_API_KEY",
     csv_path="routers/google/models.csv",
     default_model="gemini-2.0-flash",
-    model_id_format="name",
   ),
   "claude": RouterConfig(
     key="claude", name="Anthropic Claude",
@@ -189,7 +179,6 @@ ROUTERS: Dict[str, RouterConfig] = {
     api_key_env="ANTHROPIC_API_KEY", api_key_file=".ANTHROPIC_API_KEY",
     csv_path="routers/claude/models.csv",
     default_model="claude-sonnet-4-5",
-    model_id_format="name",
   ),
   "openrouter": RouterConfig(
     key="openrouter", name="OpenRouter",
@@ -197,27 +186,11 @@ ROUTERS: Dict[str, RouterConfig] = {
     api_key_env="OPENROUTER_API_KEY", api_key_file=".OPENROUTER_API_KEY",
     csv_path="routers/openrouter/models.csv",
     default_model="anthropic/claude-3.5-sonnet",
-    model_id_format="name",
   ),
 }
-ROUTER_DEFAULT = "hf"
+ROUTER_DEFAULT = "openrouter"
 
 CONFIG_PATH = Path(__file__).parent / ".llm_config.json"
-OLD_CONFIG_PATH = Path(__file__).parent / ".hf_config.json"
-
-def _migrate_config():
-  """Migrate .hf_config.json to .llm_config.json if needed."""
-  if OLD_CONFIG_PATH.exists() and not CONFIG_PATH.exists():
-    try:
-      old = json.loads(OLD_CONFIG_PATH.read_text(encoding="utf-8"))
-      new = {
-        "router": "hf",
-        "hf": {"default_model": old.get("default_model", ROUTERS["hf"].default_model)},
-      }
-      CONFIG_PATH.write_text(json.dumps(new, indent=2), encoding="utf-8")
-      console.print("[dim]Migrated .hf_config.json → .llm_config.json[/dim]")
-    except Exception as e:
-      console.print(f"[yellow]Config migration failed: {e}[/yellow]")
 
 def load_config() -> dict:
   if CONFIG_PATH.exists():
@@ -257,29 +230,18 @@ class ModelInfo:
   throughput: str
   tools: str
   structured: str
-  id_format: str = "name:provider"
 
   @property
   def total_cost(self) -> float:
     return self.input_cost + self.output_cost
-
-  @property
-  def full_id(self) -> str:
-    """Returns the format expected by the API."""
-    if ":" in self.name:
-      return self.name
-    if self.id_format == "name:provider":
-      return f"{self.name}:{self.provider}"
-    return self.name
 
 # --- Managers (Logic Layer) ---
 
 class ModelRegistry:
   """Handles loading and searching for models."""
 
-  def __init__(self, csv_path: str = "./routers/hf/models.csv", model_id_format: str = "name:provider"):
+  def __init__(self, csv_path: str):
     self.csv_path = Path(csv_path)
-    self.model_id_format = model_id_format
     self.models: List[ModelInfo] = self._load_models()
 
   def _load_models(self) -> List[ModelInfo]:
@@ -306,7 +268,6 @@ class ModelRegistry:
             throughput=row.get('Throughput(t/s)', '-'),
             tools=row.get('Tools', ''),
             structured=row.get('Structured', ''),
-            id_format=self.model_id_format,
           ))
     except Exception as e:
       console.print(f"[yellow]Error parsing CSV: {e}[/yellow]")
@@ -340,7 +301,7 @@ class ContextManager:
   """Handles loading and saving chat history."""
   
   def __init__(self, context_id: str = None):
-    self.base_dir = Path(tempfile.gettempdir()) / "huggingchat_contexts"
+    self.base_dir = Path(tempfile.gettempdir()) / "llm_chat_contexts"
     self.base_dir.mkdir(parents=True, exist_ok=True)
     self.context_id = context_id
     self.messages: List[Dict[str, str]] = []
@@ -421,14 +382,10 @@ class LLMClient:
 
 class App:
   def __init__(self):
-    _migrate_config()
     config = load_config()
     router_key = config.get("router", ROUTER_DEFAULT)
     self.router = ROUTERS.get(router_key, ROUTERS[ROUTER_DEFAULT])
-    self.registry = ModelRegistry(
-      csv_path=self.router.csv_path,
-      model_id_format=self.router.model_id_format,
-    )
+    self.registry = ModelRegistry(csv_path=self.router.csv_path)
     self._llm: Optional[LLMClient] = None
 
   @property
@@ -591,7 +548,7 @@ class App:
       selected_model = self.registry.find_best_provider(model_name)
 
     # Fallback if model not in CSV but passed as arg
-    full_model_id = selected_model.full_id if selected_model else (f"{model_name}:{provider}" if provider else model_name)
+    full_model_id = selected_model.name if selected_model else model_name
 
     # 3. Setup Context
     ctx_mgr = ContextManager(context_id)
