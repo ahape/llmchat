@@ -37,7 +37,7 @@ param(
   [string]$Context
 )
 
-$sourceRoot = "C:\Users\AlanHape\source\repos\huggingchat\" # Change this when copying to other directories
+$sourceRoot = "C:\Users\AlanHape\source\repos\llmchat\" # Change this when copying to other directories
 $pythonExe = Join-Path $sourceRoot ".venv/Scripts/python.exe"
 $pythonArgs = @(Join-Path $sourceRoot 'chat.py')
 
@@ -66,4 +66,9 @@ if ($Context) {
   $pythonArgs += "--context"
 }
 
-& $pythonExe @pythonArgs
+try {
+    Push-Location $sourceRoot
+    & $pythonExe @pythonArgs
+} finally {
+    Pop-Location
+}
