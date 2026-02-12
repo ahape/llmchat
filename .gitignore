@@ -4,3 +4,7 @@ __pycache__/
 .OPENROUTER_API_KEY
 
 .llm_config.json
+
+.claude/
+
+# NOTE .claude/inbox is where prompt tasks are store
