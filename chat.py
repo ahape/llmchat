@@ -61,22 +61,24 @@ class Args:
     elif self.question == "-":
       self.question = sys.stdin.read().strip()
 
+parser_epilog = """
+Examples:
+  %(prog)s "why is the sky blue?"
+  %(prog)s --question "why is the sky blue?"
+  %(prog)s --model "deepseek-ai/DeepSeek-V3.2" --question "..."
+  %(prog)s --question "..." --model "deepseek-ai/DeepSeek-V3.2"
+  %(prog)s "..." --model "deepseek-ai/DeepSeek-V3.2"
+  %(prog)s --context "follow up question"         # Continue from last message
+  %(prog)s -c "another follow up"                 # Short form
+  %(prog)s --compose                              # Opens Neovim to compose question
+  %(prog)s --compose --model "..."                # Compose with specific model
+"""
+
 def parse_arguments():
   parser = argparse.ArgumentParser(
     description="Process a question with an optional model parameter",
     formatter_class=argparse.RawDescriptionHelpFormatter,
-    epilog="""
- Examples:
- %(prog)s "why is the sky blue?"
- %(prog)s --question "why is the sky blue?"
- %(prog)s --model "deepseek-ai/DeepSeek-V3.2" --question "..."
- %(prog)s --question "..." --model "deepseek-ai/DeepSeek-V3.2"
- %(prog)s "..." --model "deepseek-ai/DeepSeek-V3.2"
- %(prog)s --context "follow up question"         # Continue from last message
- %(prog)s -c "another follow up"                 # Short form
- %(prog)s --compose                              # Opens Neovim to compose question
- %(prog)s --compose --model "..."                # Compose with specific model
-    """
+    epilog=parser_epilog
   )
 
   # Mutually exclusive group for list-models
@@ -520,6 +522,18 @@ class App:
     save_config(config)
     console.print(f"\n[bold green]Router switched to:[/bold green] [cyan]{selected.name}[/cyan]")
 
+  def show_config(self):
+    """Display current router and model configuration."""
+    config = load_config()
+    router_config = config.get(self.router.key, {})
+    model = router_config.get("default_model", self.router.default_model)
+    help_message = parser_epilog.replace("%(prog)s", "")
+
+    console.print(f"[dim]Current settings:[/dim]")
+    console.print(f"  [dim]Router:[/dim] {self.router.key}")
+    console.print(f"  [dim]Slug:[/dim]   {model}")
+    console.print(f"[dim]{help_message}[/dim]")
+
   def run_prompt(self, question: str, model_name: str = None, provider: str = None, continue_context: bool = False):
     if not question:
       console.print("[red]Error: Question is required.[/red]")
@@ -665,5 +679,7 @@ if __name__ == "__main__":
     app.switch_model()
   elif args.switch_router:
     app.switch_router()
+  elif not args.question:
+    app.show_config()
   else:
     app.run_prompt(args.question, args.model, continue_context=args.context)
