@@ -1,0 +1,22 @@
+Process a question with an optional model parameter
+
+Options:
+  --list-models, -l, -lm      List available models for the active router, then exit
+  --switch-model, -s, -sm     Interactively switch the default model, then exit
+  --switch-router, -sr        Interactively switch the active API router, then exit
+  --question, -q TEXT         The question to process
+  --model, -m TEXT            Model to use for processing
+  --context, -c               Continue the conversation from the last message (without this flag, starts fresh)
+  --compose, -vim             Open Neovim to compose your question, then continue normally
+  positional_question         Question as a positional argument (alternative to --question)
+
+Examples:
+  %(prog)s "why is the sky blue?"
+  %(prog)s --question "why is the sky blue?"
+  %(prog)s --model "deepseek-ai/DeepSeek-V3.2" --question "..."
+  %(prog)s --question "..." --model "deepseek-ai/DeepSeek-V3.2"
+  %(prog)s "..." --model "deepseek-ai/DeepSeek-V3.2"
+  %(prog)s --context "follow up question"         # Continue from last message
+  %(prog)s -c "another follow up"                 # Short form
+  %(prog)s --compose                              # Opens Neovim to compose question
+  %(prog)s --compose --model "..."                # Compose with specific model

@@ -21,139 +21,58 @@ from openai import OpenAI, APIError
 # Initialize Console globally for UI
 console = Console()
 
-@dataclass
-class Args:
-  question: str = None
-  list_models: bool = False
-  switch_model: bool = False
-  switch_router: bool = False
-  model: str = None
-  context: bool = False
-  compose: bool = False
+def _load_help_text() -> str:
+  """Load help text from external file."""
+  help_path = Path(__file__).parent / "help.txt"
+  if help_path.exists():
+    return help_path.read_text(encoding="utf-8")
+  return ""
 
-  def __post_init__(self):
-    if self.compose:
-      import tempfile
-      import subprocess
-      # Create a temp file with .md extension for better syntax highlighting
-      with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
-        temp_path = f.name
-
-      try:
-        # Open nvim and wait for it to close
-        result = subprocess.run(['nvim', temp_path], check=False)
-        if result.returncode == 0:
-          # Read the composed content
-          with open(temp_path, 'r', encoding='utf-8') as f:
-            composed = f.read().strip()
-          if composed:
-            self.question = composed
-          else:
-            console.print("[yellow]No content composed. Exiting.[/yellow]")
-            sys.exit(0)
+def _handle_compose_and_stdin(args):
+  """Process compose and stdin flags, modifying args in place."""
+  import sys
+  if args.compose:
+    import subprocess
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+      temp_path = f.name
+    try:
+      result = subprocess.run(['nvim', temp_path], check=False)
+      if result.returncode == 0:
+        with open(temp_path, 'r', encoding='utf-8') as f:
+          composed = f.read().strip()
+        if composed:
+          args.question = composed
         else:
-          console.print("[red]Editor exited with error.[/red]")
-          sys.exit(1)
-      finally:
-        # Clean up temp file
-        if os.path.exists(temp_path):
-          os.remove(temp_path)
-    elif self.question == "-":
-      self.question = sys.stdin.read().strip()
-
-parser_epilog = """
-Examples:
-  %(prog)s "why is the sky blue?"
-  %(prog)s --question "why is the sky blue?"
-  %(prog)s --model "deepseek-ai/DeepSeek-V3.2" --question "..."
-  %(prog)s --question "..." --model "deepseek-ai/DeepSeek-V3.2"
-  %(prog)s "..." --model "deepseek-ai/DeepSeek-V3.2"
-  %(prog)s --context "follow up question"         # Continue from last message
-  %(prog)s -c "another follow up"                 # Short form
-  %(prog)s --compose                              # Opens Neovim to compose question
-  %(prog)s --compose --model "..."                # Compose with specific model
-"""
+          console.print("[yellow]No content composed. Exiting.[/yellow]")
+          sys.exit(0)
+      else:
+        console.print("[red]Editor exited with error.[/red]")
+        sys.exit(1)
+    finally:
+      if os.path.exists(temp_path):
+        os.remove(temp_path)
+  elif args.question == "-":
+    args.question = sys.stdin.read().strip()
 
 def parse_arguments():
   parser = argparse.ArgumentParser(
-    description="Process a question with an optional model parameter",
     formatter_class=argparse.RawDescriptionHelpFormatter,
-    epilog=parser_epilog
+    epilog=_load_help_text()
   )
-
-  # Mutually exclusive group for list-models
   group = parser.add_mutually_exclusive_group()
-
-  group.add_argument(
-    "--list-models",
-    "-l",
-    "-lm",
-    action="store_true",
-    help="List available models for the active router, then exit"
-  )
-
-  group.add_argument(
-    "--switch-model",
-    "-s",
-    "-sm",
-    action="store_true",
-    help="Interactively switch the default model, then exit"
-  )
-
-  group.add_argument(
-    "--switch-router",
-    "-sr",
-    action="store_true",
-    help="Interactively switch the active API router, then exit"
-  )
-
-  # Optional arguments (only valid when not using --list-models)
-  group.add_argument(
-    "--question",
-    "-q",
-    type=str,
-    help="The question to process"
-  )
-
-  parser.add_argument(
-    "--model",
-    "-m",
-    type=str,
-    help="Model to use for processing"
-  )
-
-  parser.add_argument(
-    "--context",
-    "-c",
-    action="store_true",
-    help="Continue the conversation from the last message (without this flag, starts fresh)"
-  )
-
-  parser.add_argument(
-    "--compose",
-    "-vim",
-    action="store_true",
-    help="Open Neovim to compose your question, then continue normally"
-  )
-
-  # Positional argument (will be used if --question is not provided)
-  group.add_argument(
-    "positional_question",
-    nargs="?",
-    type=str,
-    help="Question as a positional argument (alternative to --question)"
-  )
+  group.add_argument("--list-models", "-l", "-lm", action="store_true")
+  group.add_argument("--switch-model", "-s", "-sm", action="store_true")
+  group.add_argument("--switch-router", "-sr", action="store_true")
+  group.add_argument("--question", "-q", type=str)
+  parser.add_argument("--model", "-m", type=str)
+  parser.add_argument("--context", "-c", action="store_true")
+  parser.add_argument("--compose", "-vim", action="store_true")
+  group.add_argument("positional_question", nargs="?", type=str)
 
   args = parser.parse_args()
-  return Args(
-    list_models=bool(args.list_models),
-    switch_model=bool(args.switch_model),
-    switch_router=bool(args.switch_router),
-    question=args.question or args.positional_question,
-    model=args.model,
-    context=args.context,
-    compose=bool(args.compose)
-  )
+  args.question = args.question or args.positional_question
+  _handle_compose_and_stdin(args)
+  return args
 
 # --- Configuration & Data Structures ---
 
@@ -527,7 +446,7 @@ class App:
     config = load_config()
     router_config = config.get(self.router.key, {})
     model = router_config.get("default_model", self.router.default_model)
-    help_message = parser_epilog.replace("%(prog)s", "")
+    help_message = "\n" + _load_help_text().replace("%(prog)s", "")
 
     console.print(f"[dim]Current settings:[/dim]")
     console.print(f"  [dim]Router:[/dim] {self.router.key}")
