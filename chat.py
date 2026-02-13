@@ -614,6 +614,10 @@ class App:
     # 8. Write response to file if requested
     if outfile and full_response:
       outpath = Path(outfile)
+      if not outpath.is_absolute():
+        caller_dir = os.environ.get("CHAT_LLM_CALLER_DIR")
+        if caller_dir:
+          outpath = Path(caller_dir) / outpath
       outpath.write_text(full_response + "\n", encoding="utf-8")
       console.print(f"[dim]Response written to '{outpath}'[/dim]")
 
