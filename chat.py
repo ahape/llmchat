@@ -65,6 +65,7 @@ def parse_arguments():
   group.add_argument("--switch-router", "-sr", action="store_true")
   group.add_argument("--question", "-q", type=str)
   parser.add_argument("--model", "-m", type=str)
+  parser.add_argument("--router", "-r", type=str)
   parser.add_argument("--context", "-c", action="store_true")
   parser.add_argument("--compose", "-vim", action="store_true")
   parser.add_argument("--out-file", "-o", type=str, default=None, help="Write response to file")
@@ -297,10 +298,14 @@ class LLMClient:
 # --- Presentation Layer (UI) ---
 
 class App:
-  def __init__(self):
+  def __init__(self, router_override: str = None):
     config = load_config()
-    router_key = config.get("router", ROUTER_DEFAULT)
-    self.router = ROUTERS.get(router_key, ROUTERS[ROUTER_DEFAULT])
+    router_key = router_override or config.get("router", ROUTER_DEFAULT)
+    if router_key not in ROUTERS:
+      console.print(f"[red]ERROR: Unknown router '{router_key}'. Available: {', '.join(ROUTERS.keys())}[/red]")
+      import sys
+      sys.exit(1)
+    self.router = ROUTERS[router_key]
     self.registry = ModelRegistry(csv_path=self.router.csv_path)
     self._llm: Optional[LLMClient] = None
 
@@ -617,7 +622,7 @@ if __name__ == "__main__":
   
   # Simple argument parsing wrapper if not imported
   args = parse_arguments()
-  app = App()
+  app = App(router_override=args.router)
 
   if args.list_models:
     app.list_models()

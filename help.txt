@@ -6,6 +6,7 @@ Options:
   --switch-router, -sr        Interactively switch the active API router, then exit
   --question, -q TEXT         The question to process
   --model, -m TEXT            Model to use for processing
+  --router, -r TEXT           Use a specific router (e.g., "openrouter", "google") instead of the cached one
   --context, -c               Continue the conversation from the last message (without this flag, starts fresh)
   --compose, -vim             Open Neovim to compose your question, then continue normally
   --out-file, -o FILE         Write the response to a file
@@ -21,5 +22,7 @@ Examples:
   %(prog)s -c "another follow up"                 # Short form
   %(prog)s --compose                              # Opens Neovim to compose question
   %(prog)s --compose --model "..."                # Compose with specific model
+  %(prog)s "..." --router google                  # Use Google router for this query
+  %(prog)s "..." -r openrouter                    # Short form
   %(prog)s "..." --out-file response.md           # Write response to file
   %(prog)s "..." -o response.md                   # Short form

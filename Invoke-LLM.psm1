@@ -13,6 +13,8 @@
   Invoke-LLM -Compose
   Invoke-LLM -Compose -Model "deepseek-ai/DeepSeek-V3.2"
   Invoke-LLM "explain recursion" -Outfile response.md
+  Invoke-LLM "why is the sky blue?" -Router google
+  Invoke-LLM "explain recursion" -Router openrouter
 
   Aliases:
   Ask-LLM "why is the sky blue?"
@@ -41,6 +43,9 @@ function Invoke-LLM {
     [Parameter(HelpMessage="Continue conversation from last message (without this flag, starts fresh)")]
     [switch]$Context,
 
+    [Parameter(HelpMessage="Use a specific router instead of the cached one (e.g., 'openrouter', 'google')")]
+    [string]$Router,
+
     [Parameter(HelpMessage="Write the response to a file")]
     [string]$Outfile
   )
@@ -63,6 +68,9 @@ function Invoke-LLM {
   }
   if ($SwitchRouter) {
     $pythonArgs += "--switch-router"
+  }
+  if ($Router) {
+    $pythonArgs += @("--router", $Router)
   }
   if ($Compose) {
     $pythonArgs += "--compose"
