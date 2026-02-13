@@ -67,6 +67,7 @@ def parse_arguments():
   parser.add_argument("--model", "-m", type=str)
   parser.add_argument("--context", "-c", action="store_true")
   parser.add_argument("--compose", "-vim", action="store_true")
+  parser.add_argument("--out-file", "-o", type=str, default=None, help="Write response to file")
   group.add_argument("positional_question", nargs="?", type=str)
 
   args = parser.parse_args()
@@ -214,11 +215,12 @@ class ModelRegistry:
 class ContextManager:
   """Handles loading and saving chat history."""
 
-  def __init__(self, continue_thread: bool = False):
+  def __init__(self, continue_thread: bool = False, quiet: bool = False):
     self.base_dir = Path(tempfile.gettempdir()) / "llm_chat_contexts"
     self.base_dir.mkdir(parents=True, exist_ok=True)
     self.context_id = "default"  # Always use default context
     self.messages: List[Dict[str, str]] = []
+    self.quiet = quiet
 
     if continue_thread:
       # Load existing history to continue the conversation
@@ -226,7 +228,8 @@ class ContextManager:
     else:
       # Start fresh - clear any existing history
       self.messages = []
-      console.print("[dim]Starting fresh conversation (use --context to continue from last message)[/dim]")
+      if not self.quiet:
+        console.print("[dim]Starting fresh conversation (use --context to continue from last message)[/dim]")
 
   def _load(self):
     file_path = self.context_path
@@ -235,7 +238,8 @@ class ContextManager:
         with open(file_path, 'r', encoding='utf-8') as f:
           data = json.load(f)
           self.messages = data.get('messages', [])
-        console.print(f"[dim]Loaded {len(self.messages)} messages from context '{file_path}'[/dim]")
+        if not self.quiet:
+          console.print(f"[dim]Loaded {len(self.messages)} messages from context '{file_path}'[/dim]")
       except Exception as e:
         console.print(f"[red]Failed to load context: {e}[/red]")
 
@@ -453,7 +457,7 @@ class App:
     console.print(f"  [dim]Slug:[/dim]   {model}")
     console.print(f"[dim]{help_message}[/dim]")
 
-  def run_prompt(self, question: str, model_name: str = None, provider: str = None, continue_context: bool = False):
+  def run_prompt(self, question: str, model_name: str = None, provider: str = None, continue_context: bool = False, outfile: str = None):
     if not question:
       console.print("[red]Error: Question is required.[/red]")
       return
@@ -475,14 +479,17 @@ class App:
     full_model_id = selected_model.name if selected_model else model_name
 
     # 3. Setup Context (always save, optionally continue)
-    ctx_mgr = ContextManager(continue_thread=continue_context)
+    quiet = bool(outfile)
+    ctx_mgr = ContextManager(continue_thread=continue_context, quiet=quiet)
 
     # 4. Display UI Status
-    console.print(f"\n  [cyan]Slug:[/cyan]   {full_model_id}")
-    console.print(f"  [cyan]Router:[/cyan]   {self.router.key}")
+    if not quiet:
+      console.print(f"\n  [cyan]Slug:[/cyan]   {full_model_id}")
+      console.print(f"  [cyan]Router:[/cyan]   {self.router.key}")
 
     # 5. Execute API Call (in separate thread to allow CTRL+C)
-    console.print("\n[dim italic]Connecting to API...[/dim italic]\n")
+    if not quiet:
+      console.print("\n[dim italic]Connecting to API...[/dim italic]\n")
     messages = ctx_mgr.get_messages_for_api(question)
 
     # Thread-safe container for the response stream
@@ -523,34 +530,46 @@ class App:
 
     # 6. Render Response
     try:
-      with Live(console=console, refresh_per_second=10) as live:
-        # Show waiting status until first token
-        live.update("[dim italic]Waiting for response...[/dim italic]")
-
+      if quiet:
         for chunk in response_stream:
           current_time = time.time()
-
           if chunk.choices and chunk.choices[0].delta.content:
-            content = chunk.choices[0].delta.content
-            full_response += content
+            full_response += chunk.choices[0].delta.content
             token_count += 1
             last_token_time = current_time
-
-            # Mark first token received
             if not first_token_received:
               first_token_received = True
-              time_to_first_token = current_time - start_time
-              console.print(f"[dim]First token received in {time_to_first_token:.2f}s[/dim]\n")
-
-            # Update with response content
-            live.update(Markdown(full_response))
-
-          # Detect potential hang (no tokens for 30+ seconds after first token)
-          if first_token_received and (current_time - last_token_time) > 30:
-            live.update(Markdown(full_response + "\n\n[yellow italic]⚠ No tokens received for 30s, stream may be stalled...[/yellow italic]"))
-
           if chunk.usage:
             usage = chunk.usage
+      else:
+        with Live(console=console, refresh_per_second=10) as live:
+          # Show waiting status until first token
+          live.update("[dim italic]Waiting for response...[/dim italic]")
+
+          for chunk in response_stream:
+            current_time = time.time()
+
+            if chunk.choices and chunk.choices[0].delta.content:
+              content = chunk.choices[0].delta.content
+              full_response += content
+              token_count += 1
+              last_token_time = current_time
+
+              # Mark first token received
+              if not first_token_received:
+                first_token_received = True
+                time_to_first_token = current_time - start_time
+                console.print(f"[dim]First token received in {time_to_first_token:.2f}s[/dim]\n")
+
+              # Update with response content
+              live.update(Markdown(full_response))
+
+            # Detect potential hang (no tokens for 30+ seconds after first token)
+            if first_token_received and (current_time - last_token_time) > 30:
+              live.update(Markdown(full_response + "\n\n[yellow italic]⚠ No tokens received for 30s, stream may be stalled...[/yellow italic]"))
+
+            if chunk.usage:
+              usage = chunk.usage
     except KeyboardInterrupt:
       console.print("\n\n[yellow]Response cancelled by user (CTRL+C)[/yellow]")
       if full_response:
@@ -561,29 +580,37 @@ class App:
     end_time = time.time()
     total_time = end_time - start_time
 
-    console.print("\n")
+    if not quiet:
+      console.print("\n")
 
-    # 6b. Display Cost and Performance
-    if usage:
-      prompt_tokens = usage.prompt_tokens or 0
-      completion_tokens = usage.completion_tokens or 0
-      total_tokens = prompt_tokens + completion_tokens
-      tokens_per_sec = completion_tokens / total_time if total_time > 0 else 0
-      cost_line = f"[dim]Tokens: {prompt_tokens} in + {completion_tokens} out = {total_tokens} total[/dim]"
-      if selected_model and (selected_model.input_cost > 0 or selected_model.output_cost > 0):
-        input_cost = (prompt_tokens / 1_000_000) * selected_model.input_cost
-        output_cost = (completion_tokens / 1_000_000) * selected_model.output_cost
-        total_cost = input_cost + output_cost
-        cost_line += f"[dim] | Cost: ${total_cost:.6f}[/dim]"
-      cost_line += f"[dim] | Time: {total_time:.2f}s ({tokens_per_sec:.1f} tokens/s)[/dim]"
-      console.print(cost_line)
+      # 6b. Display Cost and Performance
+      if usage:
+        prompt_tokens = usage.prompt_tokens or 0
+        completion_tokens = usage.completion_tokens or 0
+        total_tokens = prompt_tokens + completion_tokens
+        tokens_per_sec = completion_tokens / total_time if total_time > 0 else 0
+        cost_line = f"[dim]Tokens: {prompt_tokens} in + {completion_tokens} out = {total_tokens} total[/dim]"
+        if selected_model and (selected_model.input_cost > 0 or selected_model.output_cost > 0):
+          input_cost = (prompt_tokens / 1_000_000) * selected_model.input_cost
+          output_cost = (completion_tokens / 1_000_000) * selected_model.output_cost
+          total_cost = input_cost + output_cost
+          cost_line += f"[dim] | Cost: ${total_cost:.6f}[/dim]"
+        cost_line += f"[dim] | Time: {total_time:.2f}s ({tokens_per_sec:.1f} tokens/s)[/dim]"
+        console.print(cost_line)
 
     # 7. Save Context (always save)
     if full_response:
       ctx_mgr.add_message("user", question)
       ctx_mgr.add_message("assistant", full_response)
       ctx_mgr.save()
-      console.print(f"[dim]Context saved to '{ctx_mgr.context_path}'[/dim]")
+      if not quiet:
+        console.print(f"[dim]Context saved to '{ctx_mgr.context_path}'[/dim]")
+
+    # 8. Write response to file if requested
+    if outfile and full_response:
+      outpath = Path(outfile)
+      outpath.write_text(full_response + "\n", encoding="utf-8")
+      console.print(f"[dim]Response written to '{outpath}'[/dim]")
 
 if __name__ == "__main__":
   import sys
@@ -601,4 +628,4 @@ if __name__ == "__main__":
   elif not args.question:
     app.show_config()
   else:
-    app.run_prompt(args.question, args.model, continue_context=args.context)
+    app.run_prompt(args.question, args.model, continue_context=args.context, outfile=args.out_file)

@@ -12,6 +12,7 @@
   Invoke-LLM "start fresh conversation"
   Invoke-LLM -Compose
   Invoke-LLM -Compose -Model "deepseek-ai/DeepSeek-V3.2"
+  Invoke-LLM "explain recursion" -Outfile response.md
 
   Aliases:
   Ask-LLM "why is the sky blue?"
@@ -38,7 +39,10 @@ function Invoke-LLM {
     [switch]$Compose,
 
     [Parameter(HelpMessage="Continue conversation from last message (without this flag, starts fresh)")]
-    [switch]$Context
+    [switch]$Context,
+
+    [Parameter(HelpMessage="Write the response to a file")]
+    [string]$Outfile
   )
 
   $sourceRoot = "C:\Users\AlanHape\source\repos\llmchat\" # Change this when copying to other directories
@@ -65,6 +69,9 @@ function Invoke-LLM {
   }
   if ($Context) {
     $pythonArgs += "--context"
+  }
+  if ($Outfile) {
+    $pythonArgs += @("--out-file", $Outfile)
   }
 
   try {
