@@ -15,6 +15,7 @@
   Invoke-LLM "explain recursion" -Outfile response.md
   Invoke-LLM "why is the sky blue?" -Router google
   Invoke-LLM "explain recursion" -Router openrouter
+  Invoke-LLM "why is the sky blue?" -Router openrouter -ChooseModel
 
   Aliases:
   Ask-LLM "why is the sky blue?"
@@ -46,6 +47,9 @@ function Invoke-LLM {
     [Parameter(HelpMessage="Use a specific router instead of the cached one (e.g., 'openrouter', 'google')")]
     [string]$Router,
 
+    [Parameter(HelpMessage="Interactively pick a model for this request (does not change default)")]
+    [switch]$ChooseModel,
+
     [Parameter(HelpMessage="Write the response to a file")]
     [string]$Outfile
   )
@@ -71,6 +75,9 @@ function Invoke-LLM {
   }
   if ($Router) {
     $pythonArgs += @("--router", $Router)
+  }
+  if ($ChooseModel) {
+    $pythonArgs += "--choose-model"
   }
   if ($Compose) {
     $pythonArgs += "--compose"

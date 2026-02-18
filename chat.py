@@ -318,93 +318,82 @@ class App:
       self._llm = LLMClient(base_url=self.router.base_url, api_key=api_key)
     return self._llm
 
-  def list_models(self, search: str = None):
-    models = self.registry.models
+  def _get_unique_models(self, search: str = None) -> List[ModelInfo]:
+    """Deduplicate models, returning cheapest provider for each unique name."""
+    source = self.registry.models
     if search:
-      models = [m for m in models if search.lower() in m.name.lower()]
-
-    if not models:
-      console.print("[yellow]No models found[/yellow]")
-      return
-
-    table = Table(title="Available Models")
-    table.add_column("Model", style="cyan", no_wrap=False)
-    table.add_column("Provider", style="green")
-    table.add_column("Input $/1M", style="blue")
-    table.add_column("Output $/1M", style="blue")
-    table.add_column("Context", style="magenta")
-
-    # Deduplicate by showing the cheapest provider for each unique model name
-    seen = set()
-    for m in models:
-      if m.name not in seen:
-        seen.add(m.name)
-        best = self.registry.find_best_provider(m.name)
-        if best:
-          table.add_row(
-            best.name, best.provider, 
-            f"{best.input_cost}", f"{best.output_cost}", 
-            best.context_length
-          )
-    console.print(table)
-
-  def switch_model(self):
-    """Interactively switch the default model."""
-    # Deduplicate models, showing cheapest provider for each
+      source = [m for m in source if search.lower() in m.name.lower()]
     seen = {}
-    for m in self.registry.models:
+    for m in source:
       if m.name not in seen:
         best = self.registry.find_best_provider(m.name)
         if best:
           seen[m.name] = best
+    return list(seen.values())
 
-    models = list(seen.values())
-    if not models:
-      console.print("[yellow]No models found[/yellow]")
-      return
-
-    # Show current default
-    config = load_config()
-    router_config = config.get(self.router.key, {})
-    current = router_config.get("default_model", self.router.default_model)
-    console.print(f"\n[bold]Router:[/bold] [green]{self.router.name}[/green]")
-    console.print(f"[bold]Current default model:[/bold] [cyan]{current}[/cyan]\n")
-
-    # Display numbered list
-    table = Table(title="Available Models")
-    table.add_column("#", style="bold", justify="right")
+  def _build_model_table(self, models: List[ModelInfo], title: str, numbered: bool = False) -> Table:
+    """Build a rich Table of models, optionally with row numbers."""
+    table = Table(title=title)
+    if numbered:
+      table.add_column("#", style="bold", justify="right")
     table.add_column("Model", style="cyan", no_wrap=False)
     table.add_column("Provider", style="green")
     table.add_column("Input $/1M", style="blue")
     table.add_column("Output $/1M", style="blue")
     table.add_column("Context", style="magenta")
-
     for i, m in enumerate(models, 1):
-      table.add_row(str(i), m.name, m.provider, f"{m.input_cost}", f"{m.output_cost}", m.context_length)
+      row = [m.name, m.provider, f"{m.input_cost}", f"{m.output_cost}", m.context_length]
+      if numbered:
+        row.insert(0, str(i))
+      table.add_row(*row)
+    return table
 
-    console.print(table)
-
-    # Prompt for selection
+  def _prompt_model_selection(self, models: List[ModelInfo]) -> Optional[ModelInfo]:
+    """Prompt the user to pick a model by number. Returns None on cancel."""
     console.print(f"\nEnter a number (1-{len(models)}) to select a model, or 'q' to cancel:")
     try:
       choice = input("> ").strip()
     except (EOFError, KeyboardInterrupt):
       console.print("\n[dim]Cancelled.[/dim]")
-      return
-
+      return None
     if choice.lower() == "q":
       console.print("[dim]Cancelled.[/dim]")
-      return
-
+      return None
     try:
       idx = int(choice) - 1
       if not (0 <= idx < len(models)):
         raise ValueError
     except ValueError:
       console.print("[red]Invalid selection.[/red]")
+      return None
+    return models[idx]
+
+  def list_models(self, search: str = None):
+    models = self._get_unique_models(search)
+    if not models:
+      console.print("[yellow]No models found[/yellow]")
+      return
+    console.print(self._build_model_table(models, "Available Models"))
+
+  def switch_model(self):
+    """Interactively switch the default model."""
+    models = self._get_unique_models()
+    if not models:
+      console.print("[yellow]No models found[/yellow]")
       return
 
-    selected = models[idx]
+    config = load_config()
+    router_config = config.get(self.router.key, {})
+    current = router_config.get("default_model", self.router.default_model)
+    console.print(f"\n[bold]Router:[/bold] [green]{self.router.name}[/green]")
+    console.print(f"[bold]Current default model:[/bold] [cyan]{current}[/cyan]\n")
+
+    console.print(self._build_model_table(models, "Available Models", numbered=True))
+
+    selected = self._prompt_model_selection(models)
+    if not selected:
+      return
+
     if self.router.key not in config:
       config[self.router.key] = {}
     config[self.router.key]["default_model"] = selected.name
@@ -413,51 +402,17 @@ class App:
 
   def choose_model(self) -> Optional[str]:
     """Interactively pick a model for a single request (does not persist)."""
-    seen = {}
-    for m in self.registry.models:
-      if m.name not in seen:
-        best = self.registry.find_best_provider(m.name)
-        if best:
-          seen[m.name] = best
-
-    models = list(seen.values())
+    models = self._get_unique_models()
     if not models:
       console.print("[yellow]No models found[/yellow]")
       return None
 
-    table = Table(title=f"Models ({self.router.name})")
-    table.add_column("#", style="bold", justify="right")
-    table.add_column("Model", style="cyan", no_wrap=False)
-    table.add_column("Provider", style="green")
-    table.add_column("Input $/1M", style="blue")
-    table.add_column("Output $/1M", style="blue")
-    table.add_column("Context", style="magenta")
+    console.print(self._build_model_table(models, f"Models ({self.router.name})", numbered=True))
 
-    for i, m in enumerate(models, 1):
-      table.add_row(str(i), m.name, m.provider, f"{m.input_cost}", f"{m.output_cost}", m.context_length)
-
-    console.print(table)
-
-    console.print(f"\nEnter a number (1-{len(models)}) to select a model, or 'q' to cancel:")
-    try:
-      choice = input("> ").strip()
-    except (EOFError, KeyboardInterrupt):
-      console.print("\n[dim]Cancelled.[/dim]")
+    selected = self._prompt_model_selection(models)
+    if not selected:
       return None
 
-    if choice.lower() == "q":
-      console.print("[dim]Cancelled.[/dim]")
-      return None
-
-    try:
-      idx = int(choice) - 1
-      if not (0 <= idx < len(models)):
-        raise ValueError
-    except ValueError:
-      console.print("[red]Invalid selection.[/red]")
-      return None
-
-    selected = models[idx]
     console.print(f"[dim]Using: {selected.name} ({selected.provider})[/dim]")
     return selected.name
 
