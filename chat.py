@@ -68,6 +68,8 @@ def parse_arguments():
   parser.add_argument("--router", "-r", type=str)
   parser.add_argument("--context", "-c", action="store_true")
   parser.add_argument("--compose", "-vim", action="store_true")
+  parser.add_argument("--choose-model", "-cm", action="store_true",
+    help="Interactively pick a model for this request (does not change default)")
   parser.add_argument("--out-file", "-o", type=str, default=None, help="Write response to file")
   group.add_argument("positional_question", nargs="?", type=str)
 
@@ -409,6 +411,56 @@ class App:
     save_config(config)
     console.print(f"\n[bold green]Default model switched to:[/bold green] [cyan]{selected.name}[/cyan] ({selected.provider})")
 
+  def choose_model(self) -> Optional[str]:
+    """Interactively pick a model for a single request (does not persist)."""
+    seen = {}
+    for m in self.registry.models:
+      if m.name not in seen:
+        best = self.registry.find_best_provider(m.name)
+        if best:
+          seen[m.name] = best
+
+    models = list(seen.values())
+    if not models:
+      console.print("[yellow]No models found[/yellow]")
+      return None
+
+    table = Table(title=f"Models ({self.router.name})")
+    table.add_column("#", style="bold", justify="right")
+    table.add_column("Model", style="cyan", no_wrap=False)
+    table.add_column("Provider", style="green")
+    table.add_column("Input $/1M", style="blue")
+    table.add_column("Output $/1M", style="blue")
+    table.add_column("Context", style="magenta")
+
+    for i, m in enumerate(models, 1):
+      table.add_row(str(i), m.name, m.provider, f"{m.input_cost}", f"{m.output_cost}", m.context_length)
+
+    console.print(table)
+
+    console.print(f"\nEnter a number (1-{len(models)}) to select a model, or 'q' to cancel:")
+    try:
+      choice = input("> ").strip()
+    except (EOFError, KeyboardInterrupt):
+      console.print("\n[dim]Cancelled.[/dim]")
+      return None
+
+    if choice.lower() == "q":
+      console.print("[dim]Cancelled.[/dim]")
+      return None
+
+    try:
+      idx = int(choice) - 1
+      if not (0 <= idx < len(models)):
+        raise ValueError
+    except ValueError:
+      console.print("[red]Invalid selection.[/red]")
+      return None
+
+    selected = models[idx]
+    console.print(f"[dim]Using: {selected.name} ({selected.provider})[/dim]")
+    return selected.name
+
   def switch_router(self):
     """Interactively switch the active router."""
     routers = list(ROUTERS.values())
@@ -637,4 +689,9 @@ if __name__ == "__main__":
   elif not args.question:
     app.show_config()
   else:
-    app.run_prompt(args.question, args.model, continue_context=args.context, outfile=args.out_file)
+    model = args.model
+    if args.choose_model:
+      model = app.choose_model()
+      if not model:
+        sys.exit(0)
+    app.run_prompt(args.question, model, continue_context=args.context, outfile=args.out_file)
