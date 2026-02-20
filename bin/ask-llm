@@ -1,6 +1,36 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+usage() {
+  cat <<'EOF'
+ask-llm - tiny shim around chat.py
+
+Usage: ask-llm [options] [question]
+
+Options forward directly to chat.py:
+  --fast, -brr        Shortcut for OpenRouter + FAST_LLM (or Gemini Flash Lite)
+  --model, -m VALUE   Override model
+  --router, -r VALUE  Override router
+  --context, -c       Continue previous conversation
+  --compose, -vim     Compose via Neovim
+  --out-file, -o PATH Write response to a file
+  --list-models       List models then exit
+  --switch-model      Interactive default model switcher
+  --switch-router     Interactive router switcher
+  --choose-model      Interactive per-run model picker
+  -h, --help          Show this message
+
+All other arguments (including the question) are passed through untouched.
+EOF
+}
+
+case "$1" in
+  -h|--help)
+    usage
+    exit 0
+    ;;
+esac
+
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 export CHAT_LLM_CALLER_DIR="$PWD"

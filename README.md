@@ -27,6 +27,7 @@ python3 chat.py "What is the capital of South Sudan?" --model "gemini-2.0-flash"
 python3 chat.py --switch-router     # interactively change API router
 python3 chat.py --switch-model      # interactively change default model
 python3 chat.py --list-models       # show available models
+python3 chat.py --fast "Need a quick answer"   # shortcut for OpenRouter + Gemini Flash Lite
 ```
 
 # Other stuff

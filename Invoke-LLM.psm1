@@ -16,6 +16,7 @@
   Invoke-LLM "why is the sky blue?" -Router google
   Invoke-LLM "explain recursion" -Router openrouter
   Invoke-LLM "why is the sky blue?" -Router openrouter -ChooseModel
+  Invoke-LLM "speedy summary" -Fast
 
   Aliases:
   Ask-LLM "why is the sky blue?"
@@ -51,7 +52,10 @@ function Invoke-LLM {
     [switch]$ChooseModel,
 
     [Parameter(HelpMessage="Write the response to a file")]
-    [string]$Outfile
+    [string]$Outfile,
+
+    [Parameter(HelpMessage="Shortcut for OpenRouter + FAST_LLM (or default Gemini Flash Lite)")]
+    [switch]$Fast
   )
 
   $sourceRoot = "C:\Users\AlanHape\source\repos\llmchat\" # Change this when copying to other directories
@@ -87,6 +91,9 @@ function Invoke-LLM {
   }
   if ($Outfile) {
     $pythonArgs += @("--out-file", $Outfile)
+  }
+  if ($Fast) {
+    $pythonArgs += "--fast"
   }
 
   try {

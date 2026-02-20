@@ -71,11 +71,16 @@ def parse_arguments():
   parser.add_argument("--choose-model", "-cm", action="store_true",
     help="Interactively pick a model for this request (does not change default)")
   parser.add_argument("--out-file", "-o", type=str, default=None, help="Write response to file")
+  parser.add_argument("--fast", "-brr", action="store_true",
+    help="Use OpenRouter with the google/gemini-2.5-flash-lite model for this request")
   group.add_argument("positional_question", nargs="?", type=str)
 
   args = parser.parse_args()
   args.question = args.question or args.positional_question
   _handle_compose_and_stdin(args)
+  if getattr(args, "fast", False):
+    args.router = "openrouter"
+    args.model = os.getenv("FAST_LLM") or "google/gemini-2.5-flash-lite"
   return args
 
 # --- Configuration & Data Structures ---
