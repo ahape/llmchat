@@ -11,12 +11,23 @@ from dataclasses import dataclass, asdict
 from typing import List, Optional, Dict, Any, Generator, Tuple
 from datetime import datetime
 
+import sys
+import io
+
 # Third-party imports
 from rich.markdown import Markdown
 from rich.live import Live
 from rich.table import Table
 from rich.console import Console
 from openai import OpenAI, APIError
+
+if sys.platform == "win32":
+    try:
+        # Force UTF-8 encoding on Windows to support Unicode characters in legacy terminals
+        if hasattr(sys.stdout, "reconfigure"):
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, io.UnsupportedOperation):
+        pass
 
 # Initialize Console globally for UI
 console = Console()
