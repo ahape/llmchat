@@ -14,10 +14,10 @@ Options forward directly to chat.py:
   --context, -c       Continue previous conversation
   --compose, -vim     Compose via Neovim
   --out-file, -o PATH Write response to a file
-  --list-models       List models then exit
-  --switch-model      Interactive default model switcher
-  --switch-router     Interactive router switcher
-  --choose-model      Interactive per-run model picker
+  --list-models, -l, -lm  List models then exit
+  --switch-model, -s, -sm Interactive default model switcher
+  --switch-router, -sr    Interactive router switcher
+  --choose-model, -cm     Interactive per-run model picker
   -h, --help          Show this message
 
 All other arguments (including the question) are passed through untouched.

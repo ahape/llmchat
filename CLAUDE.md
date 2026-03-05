@@ -26,6 +26,7 @@ python3 chat.py --question "your question" --model "deepseek-ai/DeepSeek-V3.2"
 python3 chat.py --list-models          # show available models
 python3 chat.py --switch-model         # interactively change default model
 python3 chat.py --switch-router        # interactively change API router
+python3 chat.py "question" --choose-model # interactively pick a model for this run
 python3 chat.py "question" --context   # continue conversation from last message
 python3 chat.py "question" -c          # short form for continuing conversation
 python3 chat.py "question"             # start fresh (overwrites previous context)
@@ -35,7 +36,7 @@ There are no tests, linter, or build system.
 
 ## Architecture
 
-Four source files, no package structure:
+Single source file (`chat.py`) with no package structure:
 
 - **`chat.py`** — Entry point and all core logic. Contains key structures:
   - `RouterConfig` — Dataclass defining a router (base URL, API key env/file, CSV path, defaults)
@@ -44,9 +45,6 @@ Four source files, no package structure:
   - `ContextManager` — Persists multi-turn chat history as JSON files in system temp dir
   - `LLMClient` — OpenAI SDK wrapper parameterized with base URL and API key
   - `App` — Orchestrates everything: resolves router/model, calls API, streams/renders response with `rich.Live`, displays token cost
-- **`arguments.py`** — argparse setup, returns an `Args` dataclass. Question can be positional or `--question`/`-q`
-- **`console.py`** — Single shared `rich.Console` instance
-- **`utilities.py`** — `@log_timing` decorator for measuring function execution time
 
 ## Key Details
 

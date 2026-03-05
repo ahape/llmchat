@@ -4,6 +4,7 @@ Options:
   --list-models, -l, -lm      List available models for the active router, then exit
   --switch-model, -s, -sm     Interactively switch the default model, then exit
   --switch-router, -sr        Interactively switch the active API router, then exit
+  --choose-model, -cm         Interactively pick a model for this request (does not change default)
   --question, -q TEXT         The question to process
   --model, -m TEXT            Model to use for processing
   --router, -r TEXT           Use a specific router (e.g., "openrouter", "google") instead of the cached one
@@ -25,6 +26,7 @@ Examples:
   %(prog)s --compose --model "..."                # Compose with specific model
   %(prog)s "..." --router google                  # Use Google router for this query
   %(prog)s "..." -r openrouter                    # Short form
+  %(prog)s "..." --choose-model                   # Pick model interactively for this run
   %(prog)s --fast "quick reply"                   # Fast shortcut for OpenRouter Gemini Flash Lite
   %(prog)s "..." --out-file response.md           # Write response to file
   %(prog)s "..." -o response.md                   # Short form
