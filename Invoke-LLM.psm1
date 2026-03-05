@@ -55,7 +55,10 @@ function Invoke-LLM {
     [string]$Outfile,
 
     [Parameter(HelpMessage="Shortcut for OpenRouter + FAST_LLM (or default Gemini Flash Lite)")]
-    [switch]$Fast
+    [switch]$Fast,
+
+    [Parameter(HelpMessage="Print the last response in raw plaintext")]
+    [switch]$LastRawResponse
   )
 
   $sourceRoot = "C:\Users\AlanHape\source\repos\llmchat\" # Change this when copying to other directories
@@ -94,6 +97,9 @@ function Invoke-LLM {
   }
   if ($Fast) {
     $pythonArgs += "--fast"
+  }
+  if ($LastRawResponse) {
+    $pythonArgs += "--last-raw-response"
   }
 
   try {

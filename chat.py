@@ -74,6 +74,7 @@ def parse_arguments():
   group.add_argument("--list-models", "-l", "-lm", action="store_true")
   group.add_argument("--switch-model", "-s", "-sm", action="store_true")
   group.add_argument("--switch-router", "-sr", action="store_true")
+  group.add_argument("--last-raw-response", action="store_true", help="Print the last response in raw plaintext")
   group.add_argument("--question", "-q", type=str)
   parser.add_argument("--model", "-m", type=str)
   parser.add_argument("--router", "-r", type=str)
@@ -432,6 +433,15 @@ class App:
     console.print(f"[dim]Using: {selected.name} ({selected.provider})[/dim]")
     return selected.name
 
+  def print_last_raw_response(self):
+    """Print the last assistant message from context in raw plaintext."""
+    ctx_mgr = ContextManager(continue_thread=True, quiet=True)
+    for msg in reversed(ctx_mgr.messages):
+      if msg["role"] == "assistant":
+        print(msg["content"])
+        return
+    print("No assistant response found in context.")
+
   def switch_router(self):
     """Interactively switch the active router."""
     routers = list(ROUTERS.values())
@@ -657,6 +667,8 @@ if __name__ == "__main__":
     app.switch_model()
   elif args.switch_router:
     app.switch_router()
+  elif args.last_raw_response:
+    app.print_last_raw_response()
   elif not args.question:
     app.show_config()
   else:

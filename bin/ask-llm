@@ -18,6 +18,7 @@ Options forward directly to chat.py:
   --switch-model, -s, -sm Interactive default model switcher
   --switch-router, -sr    Interactive router switcher
   --choose-model, -cm     Interactive per-run model picker
+  --last-raw-response     Print the last response in raw plaintext
   -h, --help          Show this message
 
 All other arguments (including the question) are passed through untouched.
