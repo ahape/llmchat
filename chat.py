@@ -32,6 +32,17 @@ if sys.platform == "win32":
 # Initialize Console globally for UI
 console = Console()
 
+
+def _write_stdout(text: str):
+  """Write text to stdout, forcing UTF-8 when stdout is redirected."""
+  stdout = sys.stdout
+  if hasattr(stdout, "buffer") and not stdout.isatty():
+    stdout.buffer.write(text.encode("utf-8", errors="replace"))
+    stdout.buffer.write(b"\n")
+    stdout.flush()
+  else:
+    print(text)
+
 def _load_help_text() -> str:
   """Load help text from external file."""
   help_path = Path(__file__).parent / "help.txt"
@@ -438,9 +449,9 @@ class App:
     ctx_mgr = ContextManager(continue_thread=True, quiet=True)
     for msg in reversed(ctx_mgr.messages):
       if msg["role"] == "assistant":
-        print(msg["content"])
+        _write_stdout(msg["content"])
         return
-    print("No assistant response found in context.")
+    _write_stdout("No assistant response found in context.")
 
   def switch_router(self):
     """Interactively switch the active router."""
