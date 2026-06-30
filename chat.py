@@ -102,8 +102,8 @@ def parse_arguments():
   args.question = args.question or args.positional_question
   _handle_compose_and_stdin(args)
   if getattr(args, "fast", False):
-    args.router = "openrouter"
-    args.model = os.getenv("FAST_LLM") or "google/gemini-2.5-flash-lite"
+    args.router = os.getenv("FAST_ROUTER") or "google"
+    args.model = os.getenv("FAST_LLM") or "gemini-3.1-flash-lite"
   return args
 
 # --- Configuration & Data Structures ---
